@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ksice/employee/home/fristPage.dart';
+import 'package:ksice/login/registerPage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,100 +16,101 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: size.height * 0.25),
-              Text(
-                'แอปส่งน้ำแข็ง',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: size.height * 0.25),
+            Text(
+              'แอปส่งน้ำแข็ง',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'ยินดีต้อนรับ',
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 32),
+            TextField(
+              controller: usernameController,
+              decoration: InputDecoration(
+                hintText: 'เบอร์โทรศัพท์ หรือ พนักงานไอดี',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16),
               ),
-              SizedBox(height: 8),
-              Text(
-                'ยินดีต้อนรับ',
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                hintText: 'รหัสผ่าน',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16),
               ),
-              SizedBox(height: 32),
-              TextField(
-                controller: usernameController,
-                decoration: InputDecoration(
-                  hintText: 'เบอร์โทรศัพท์ หรือ พนักงานไอดี',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
+            ),
+            SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {},
+                child: Text(
+                  'ลืมรหัสผ่าน ?',
+                  style: TextStyle(color: Colors.deepPurple),
                 ),
               ),
-              SizedBox(height: 16),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: 'รหัสผ่าน',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                ),
-              ),
-              SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'ลืมรหัสผ่าน ?',
-                    style: TextStyle(color: Colors.deepPurple),
+            ),
+            SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>FristPage()));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-              ),
-              SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    'เข้าสู่ระบบ',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
+                child: Text(
+                  'เข้าสู่ระบบ',
+                  style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
-              SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        // ไปยังหน้าสมัครสมาชิก
-                      },
-                      child: Text.rich(
-                        TextSpan(
-                          text: 'ยังไม่มีบัญชีผู้ใช้งาน ? ',
-                          children: [
-                            TextSpan(
-                              text: 'สมัครสมาชิกที่นี่',
-                              style: TextStyle(color: Colors.deepPurple),
-                            ),
-                          ],
-                        ),
+            ),
+            SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>RegisterPage()));
+                    },
+                    child: Text.rich(
+                      TextSpan(
+                        text: 'ยังไม่มีบัญชีผู้ใช้งาน ? ',
+                        children: [
+                          TextSpan(
+                            text: 'สมัครสมาชิกที่นี่',
+                            style: TextStyle(color: Colors.deepPurple),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              )
-            ],
-          ),
+                ),
+              ],
+            )
+          ],
         ),
       ),
     );
