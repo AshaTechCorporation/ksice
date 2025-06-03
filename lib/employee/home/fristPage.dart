@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ksice/employee/history/histryPage.dart';
+import 'package:ksice/employee/history/historyPage.dart';
 import 'package:ksice/employee/home/homePage.dart';
 import 'package:ksice/employee/map/mapPage.dart';
 import 'package:ksice/employee/profile/profilePage.dart';
@@ -26,7 +26,7 @@ class _FristPageState extends State<FristPage> {
       } else if (selectedIndex == 1) {
         currentScreen = MapPage();
       } else if (selectedIndex == 2) {
-        currentScreen = HistryPage();
+        currentScreen = HistoryPage();
       } else if (selectedIndex == 3) {
         currentScreen = ProfilePage();
       } else {}
