@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ksice/widgets/checkin_success_dialog.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -25,8 +26,8 @@ class _ProfilePageState extends State<ProfilePage> {
           Positioned.fill(
             top: size.height * 0.15,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(24, 70, 24, 24),
-              decoration: const BoxDecoration(
+              padding: EdgeInsets.fromLTRB(24, 70, 24, 24),
+              decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32),
@@ -40,19 +41,24 @@ class _ProfilePageState extends State<ProfilePage> {
                     buildTextField('ชื่อ', firstNameController),
                     buildTextField('นามสกุล', lastNameController),
                     buildTextField('เบอร์โทรศัพท์', phoneController),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          showDialog(
+                            context: context,
+                            builder: (context) => CheckInSuccessDialog(timeText: '12:00 น.'),
+                          );
+                        },
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.red),
+                          side: BorderSide(color: Colors.red),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: 16),
                         ),
-                        child: const Text(
+                        child: Text(
                           'ออกจากระบบ',
                           style: TextStyle(color: Colors.red, fontSize: 16),
                         ),
@@ -88,7 +94,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget buildTextField(String label, TextEditingController controller) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(bottom: 16),
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
