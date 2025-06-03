@@ -126,11 +126,11 @@ class _HomePageState extends State<HomePage> {
                   thicknessUnit: GaugeSizeUnit.factor,
                 ),
                 ranges: <GaugeRange>[
-                  GaugeRange(startValue: 0, endValue: 20, color: Colors.green, startWidth: 0.15, endWidth: 0.15, sizeUnit: GaugeSizeUnit.factor),
-                  GaugeRange(startValue: 20, endValue: 40, color: Colors.lightGreen, startWidth: 0.15, endWidth: 0.15, sizeUnit: GaugeSizeUnit.factor),
-                  GaugeRange(startValue: 40, endValue: 60, color: Colors.yellow, startWidth: 0.15, endWidth: 0.15, sizeUnit: GaugeSizeUnit.factor),
-                  GaugeRange(startValue: 60, endValue: 80, color: Colors.orange, startWidth: 0.15, endWidth: 0.15, sizeUnit: GaugeSizeUnit.factor),
-                  GaugeRange(startValue: 80, endValue: 100, color: Colors.red, startWidth: 0.15, endWidth: 0.15, sizeUnit: GaugeSizeUnit.factor),
+                  GaugeRange(startValue: 0, endValue: 20, color: Colors.green, startWidth: 0.45, endWidth: 0.45, sizeUnit: GaugeSizeUnit.factor),
+                  GaugeRange(startValue: 20, endValue: 40, color: Colors.lightGreen, startWidth: 0.45, endWidth: 0.45, sizeUnit: GaugeSizeUnit.factor),
+                  GaugeRange(startValue: 40, endValue: 60, color: Colors.yellow, startWidth: 0.45, endWidth: 0.45, sizeUnit: GaugeSizeUnit.factor),
+                  GaugeRange(startValue: 60, endValue: 80, color: Colors.orange, startWidth: 0.45, endWidth: 0.45, sizeUnit: GaugeSizeUnit.factor),
+                  GaugeRange(startValue: 80, endValue: 100, color: Colors.red, startWidth: 0.45, endWidth: 0.45, sizeUnit: GaugeSizeUnit.factor),
                 ],
                 pointers: <GaugePointer>[
                   NeedlePointer(
