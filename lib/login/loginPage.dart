@@ -72,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
               height: 48,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>FristPage()));
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => FristPage()), (route) => false);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>RegisterPage()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
                     },
                     child: Text.rich(
                       TextSpan(
