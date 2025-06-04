@@ -4,11 +4,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:ksice/employee/home/selectedMap.dart';
+import 'package:ksice/employee/home/services/homeService.dart';
 import 'package:ksice/employee/home/widgets/FormInputField.dart';
 
 class CustomerPage extends StatefulWidget {
-  const CustomerPage({super.key});
+  CustomerPage({super.key});
 
   @override
   State<CustomerPage> createState() => _CustomerPageState();
@@ -39,7 +41,9 @@ class _CustomerPageState extends State<CustomerPage>
   int iceTankQty = 3;
   int iceCubeQty = 1;
   List<File> shopImages = [];
-
+  LatLng? result;
+  TextEditingController nameShopController = TextEditingController();
+  TextEditingController detailShopController = TextEditingController();
   TextEditingController openDateController = TextEditingController();
   TextEditingController openTimeController = TextEditingController();
   TextEditingController closeDateController = TextEditingController();
@@ -55,28 +59,40 @@ class _CustomerPageState extends State<CustomerPage>
   final Map<String, TextEditingController> startControllers = {};
   final Map<String, TextEditingController> endControllers = {};
 
-  String _formatToTime(String input) {
-    // ถ้า input เป็น 'HH:mm' → เปลี่ยนเป็น 'HH:mm:00'
-    if (RegExp(r'^\d{2}:\d{2}$').hasMatch(input)) {
-      return '$input:00';
-    }
-    return input; // ถ้าเป็น 'HH:mm:ss' อยู่แล้วก็ใช้เลย
+   String _twoDigits(int n) => n.toString().padLeft(2, '0');
+
+String _formatToTime(String input) {
+  // แยกชั่วโมงและนาทีจากรูปแบบ 12 ชั่วโมง เช่น "1:41 AM"
+  final match = RegExp(r'^(\d{1,2}):(\d{2})\s?(AM|PM)$', caseSensitive: false)
+      .firstMatch(input.replaceAll(RegExp(r'[\u202F\u00A0\s]+'), ' ').trim());
+
+  if (match == null) {
+    throw FormatException('Invalid time format: $input');
   }
 
-  Future<void> _selectTime(TextEditingController controller) async {
-  final TimeOfDay? picked = await showTimePicker(
-    context: context,
-    initialTime: TimeOfDay.now(),
-  );
+  int hour = int.parse(match.group(1)!);
+  int minute = int.parse(match.group(2)!);
+  String period = match.group(3)!.toUpperCase();
 
-  if (picked != null) {
-    setState(() {
-      controller.text = picked.format(context);
-    });
-  }
+  if (period == 'PM' && hour != 12) hour += 12;
+  if (period == 'AM' && hour == 12) hour = 0;
+
+  return '${_twoDigits(hour)}:${_twoDigits(minute)}:00';
 }
 
 
+  Future<void> _selectTime(TextEditingController controller) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (picked != null) {
+      setState(() {
+        controller.text = picked.format(context);
+      });
+    }
+  }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -205,11 +221,11 @@ class _CustomerPageState extends State<CustomerPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _label('ชื่อร้านค้า'),
-          _textField('ชื่อร้านค้า'),
+          _textField('ชื่อร้านค้า', nameShopController),
           SizedBox(height: 16),
 
           _label('รายละเอียดร้านค้า'),
-          _textField('รายละเอียดร้านค้า', maxLines: 3),
+          _textField('รายละเอียดร้านค้า', detailShopController, maxLines: 3),
           SizedBox(height: 16),
 
           _label('เลือกวันเวลาที่ร้านเปิด'),
@@ -281,7 +297,6 @@ class _CustomerPageState extends State<CustomerPage>
             ),
 
           SizedBox(height: 24),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -291,7 +306,7 @@ class _CustomerPageState extends State<CustomerPage>
                 height: 50,
                 child: OutlinedButton(
                   onPressed: () async {
-                    final LatLng? result = await Navigator.push(
+                    result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const SelectedMapPage(),
@@ -300,7 +315,7 @@ class _CustomerPageState extends State<CustomerPage>
 
                     if (result != null) {
                       print(
-                          'เลือกแล้ว: lat=${result.latitude}, lng=${result.longitude}');
+                          'เลือกแล้ว: lat=${result!.latitude}, lng=${result!.longitude}');
                     }
                   },
                   style: OutlinedButton.styleFrom(
@@ -316,7 +331,7 @@ class _CustomerPageState extends State<CustomerPage>
           ),
 
           SizedBox(height: 16),
-          _textField('รายละเอียดที่ตั้งร้านค้า', maxLines: 2),
+          //_textField('รายละเอียดที่ตั้งร้านค้า', maxLines: 2),
           SizedBox(height: 24),
 
           SizedBox(
@@ -327,7 +342,7 @@ class _CustomerPageState extends State<CustomerPage>
                 backgroundColor: Colors.indigo,
               ),
               onPressed: () async {
-                //goToStep(1);
+                goToStep(1);
               },
               child: Text('ถัดไป',
                   style: TextStyle(
@@ -442,6 +457,7 @@ class _CustomerPageState extends State<CustomerPage>
                 onPressed: () {
                   // ทำอะไรเมื่อกด "ถัดไป"
                   print('ชื่อ: ${firstNameController.text}');
+                  goToStep(2);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.indigo,
@@ -602,8 +618,38 @@ class _CustomerPageState extends State<CustomerPage>
                   workTimes['${key}_end_time'] =
                       isActive && end.isNotEmpty ? _formatToTime(end) : '';
                 }
-
+                inspect(workDays);
                 inspect(workTimes);
+                final addCustomer = await HomeService.customerCreate(
+                  name: nameShopController.text,
+                  detail: detailShopController.text,
+                  phone: phoneController.text,
+                  date_work: openDateController.text,
+                  time_time: openTimeController.text,
+                  lat: result!.latitude.toString(), // แทนที่ด้วยค่าจริง
+                  lon: result!.longitude.toString(), // แทนที่ด้วยค่าจริง
+                  card_fname: firstNameController.text,
+                  card_lname: lastNameController.text,
+                  card_birth_date: '111111', // แทนที่ด้วยค่าจริง
+                  card_address: '78/12 ซอยประชาราษฎร์ 5 แขวงบางซื่อ เขตบางซื่อ',
+                  card_district: 'บางซื่อ',
+                  card_sub_district: 'บางซื่อ',
+                  card_postal_code: 'บางซื่อ',
+                  card_gender: 'male',
+                  card_idcard: '1103701234563',
+                  card_image:
+                      'assets/images/members/sommai.jpg', // แทนที่ด้วยค่าจริง
+                  card_province: 'กรุงเทพมหานคร', // แทนที่ด้วยค่าจริง
+                  member_shop_images: [
+                    "assets/images/shop/shop1.jpg",
+                    "assets/images/shop/shop2.jpg"
+                  ],
+                  work_days: workDays,
+                  work_times: workTimes,
+                );
+                if (addCustomer['status'] == true) {
+                  Navigator.pop(context);
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
@@ -621,27 +667,26 @@ class _CustomerPageState extends State<CustomerPage>
   }
 
   Widget _timePickerField(TextEditingController controller) {
-  return GestureDetector(
-    onTap: () => _selectTime(controller),
-    child: AbsorbPointer(
-      child: Container(
-        width: 80,
-        height: 36,
-        padding: EdgeInsets.symmetric(horizontal: 8),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        alignment: Alignment.centerLeft,
-        child: Text(
-          controller.text.isEmpty ? 'เลือกเวลา' : controller.text,
-          style: TextStyle(fontSize: 13, color: Colors.black),
+    return GestureDetector(
+      onTap: () => _selectTime(controller),
+      child: AbsorbPointer(
+        child: Container(
+          width: 80,
+          height: 36,
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          alignment: Alignment.centerLeft,
+          child: Text(
+            controller.text.isEmpty ? 'เลือกเวลา' : controller.text,
+            style: TextStyle(fontSize: 13, color: Colors.black),
+          ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   Widget _productCard({
     required String title,
@@ -730,8 +775,10 @@ class _CustomerPageState extends State<CustomerPage>
     return Text(text, style: TextStyle(fontWeight: FontWeight.bold));
   }
 
-  Widget _textField(String hint, {int maxLines = 1}) {
+  Widget _textField(String hint, TextEditingController controller,
+      {int maxLines = 1}) {
     return TextField(
+      controller: controller,
       maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hint,
