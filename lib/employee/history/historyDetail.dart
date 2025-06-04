@@ -11,33 +11,36 @@ class HistoryDetail extends StatefulWidget {
 class _HistoryDetailState extends State<HistoryDetail> {
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
+      backgroundColor: Colors.white, // ✅ พื้นหลังสีขาว
       appBar: AppBar(
-        title: Text('ประวัติการส่ง'),
+        title: Text('ประวัติการส่ง',style: TextStyle(fontSize: 16),),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 1,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            // 📦 กล่องข้อมูลร้าน
+            // 📦 ข้อมูลร้านค้า
             Card(
               elevation: 2,
+              color: Colors.white, // ✅ การ์ดสีขาว
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('00 พ.ค. 0000    12:00 น.',
-                        style: TextStyle(color: Colors.grey[700], fontSize: 13)),
-                    const SizedBox(height: 12),
+                        style: TextStyle(color: Colors.grey[700], fontSize: 10)),
+                    SizedBox(height: 12),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(30), // ✅ วงกลม
                           child: Image.network(
                             widget.data['image'],
                             width: 60,
@@ -45,37 +48,37 @@ class _HistoryDetailState extends State<HistoryDetail> {
                             fit: BoxFit.cover,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 widget.data['title'],
-                                style: const TextStyle(
+                                style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 16),
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: 4),
                               Row(
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                     decoration: BoxDecoration(
                                       color: Colors.green[100],
                                       borderRadius: BorderRadius.circular(12),
                                     ),
-                                    child: const Text('OPEN',
+                                    child: Text('OPEN',
                                         style: TextStyle(
                                             color: Colors.green, fontSize: 12)),
                                   ),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                     decoration: BoxDecoration(
                                       color: Colors.blue[100],
                                       borderRadius: BorderRadius.circular(12),
                                     ),
-                                    child: const Text('เวลาส่ง: 12:00 น.',
+                                    child: Text('เวลาส่ง: 12:00 น.',
                                         style: TextStyle(
                                             color: Colors.blue, fontSize: 12)),
                                   ),
@@ -86,34 +89,35 @@ class _HistoryDetailState extends State<HistoryDetail> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    const Text('ที่อยู่',
+                    SizedBox(height: 12),
+                    Text('ที่อยู่',
                         style: TextStyle(fontWeight: FontWeight.w600)),
-                    const Text(
+                    Text(
                       'ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่',
                       style: TextStyle(height: 1.4),
                     ),
-                    const SizedBox(height: 8),
-                    const Text('เวลาทำการ',
+                    SizedBox(height: 8),
+                    Text('เวลาทำการ',
                         style: TextStyle(fontWeight: FontWeight.w600)),
-                    const Text('เปิด: 08:00 น.\nปิด: 17:00 น.'),
+                    Text('เปิด: 08:00 น.\nปิด: 17:00 น.'),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
-            // 🧾 กล่องรายการสินค้า
+            // 🧾 รายการสินค้า
             Card(
               elevation: 2,
+              color: Colors.white, // ✅ การ์ดสีขาว
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         Text(
                           'เก็บเงินแล้ว',
                           style: TextStyle(
@@ -125,10 +129,10 @@ class _HistoryDetailState extends State<HistoryDetail> {
                         ),
                       ],
                     ),
-                    const Divider(height: 24),
+                    Divider(height: 24),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text('รายการสินค้า', style: TextStyle(fontWeight: FontWeight.bold)),
                         SizedBox(height: 8),
                         Row(
