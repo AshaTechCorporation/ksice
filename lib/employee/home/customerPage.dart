@@ -257,27 +257,39 @@ class _CustomerPageState extends State<CustomerPage>
 
           SizedBox(height: 24),
 
-          _label('แผนที่ร้านค้า'),
-          SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: OutlinedButton(
-              onPressed: () async {
-                final LatLng? result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const SelectedMapPage()),
-                );
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _label('แผนที่ร้านค้า'),
+              SizedBox(
+                width: 150,
+                height: 50,
+                child: OutlinedButton(
+                  onPressed: () async {
+                    final LatLng? result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SelectedMapPage(),
+                      ),
+                    );
 
-                if (result != null) {
-                  print(
-                      'เลือกแล้ว: lat=${result.latitude}, lng=${result.longitude}');
-                }
-              },
-              child: Text('เลือกแผนที่'),
-            ),
+                    if (result != null) {
+                      print(
+                          'เลือกแล้ว: lat=${result.latitude}, lng=${result.longitude}');
+                    }
+                  },
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          6), // ✅ ลดความมนจาก 12 → 6 หรือ 4
+                    ),
+                  ),
+                  child: const Text('เลือกแผนที่'),
+                ),
+              ),
+            ],
           ),
+
           SizedBox(height: 16),
           _textField('รายละเอียดที่ตั้งร้านค้า', maxLines: 2),
           SizedBox(height: 24),
