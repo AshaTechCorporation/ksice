@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ksice/employee/map/widget/bottomSheetMap.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -13,6 +16,7 @@ class _MapPageState extends State<MapPage> {
   double? lat;
   double? long;
   bool load = false;
+  Set<Marker> markers = {}; // Set of markers on the map
 
   @override
   void initState() {
@@ -60,6 +64,27 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
+  Set<Marker> getMarkersFromData(List<Map<String, dynamic>> data) {
+    return data.map((item) {
+      return Marker(
+        markerId: MarkerId(item['markerId']),
+        position: LatLng(item['lat'], item['long']),
+        infoWindow: InfoWindow(title: item['title']),
+        icon: BitmapDescriptor.defaultMarkerWithHue(item['statusCheck'] == true ? BitmapDescriptor.hueGreen : BitmapDescriptor.hueBlue),
+        onTap: () {
+          double distanceInMeters = Geolocator.distanceBetween(
+            lat!,
+            long!,
+            item['lat'],
+            item['long'],
+          );
+          print('ห่างกันกี่เมตร $distanceInMeters');
+          _showBottomSheet(context, distanceInMeters, item);
+        },
+      );
+    }).toSet();
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -83,60 +108,160 @@ class _MapPageState extends State<MapPage> {
                   child: GoogleMap(
                     initialCameraPosition: CameraPosition(
                       target: LatLng(lat!, long!), // ตำแหน่งเริ่มต้นของกล้อง
-                      zoom: 17, // การซูมเริ่มต้น
+                      zoom: 16, // การซูมเริ่มต้น
                     ),
-                    markers: {
-                      Marker(
-                        markerId: MarkerId('Marker1'),
-                        position: LatLng(lat!, long!),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-                        infoWindow: InfoWindow(
-                          title: 'ร้านที่ 1',
-                          // snippet: 'กรุงเทพมหานคร',
-                        ),
-                      ),
-                      Marker(
-                        markerId: MarkerId('Marker2'),
-                        position: LatLng(13.7222, 100.7797),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-                        infoWindow: InfoWindow(
-                          title: 'ร้านที่ 2',
-                          // snippet: 'กรุงเทพมหานคร',
-                        ),
-                      ),
-                      Marker(
-                        markerId: MarkerId('Marker3'),
-                        position: LatLng(13.7226, 100.7792),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-                        infoWindow: InfoWindow(
-                          title: 'ร้านที่ 3',
-                          // snippet: 'กรุงเทพมหานคร',
-                        ),
-                      ),
-                      Marker(
-                        markerId: MarkerId('Marker4'),
-                        position: LatLng(13.7215, 100.7790),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-                        infoWindow: InfoWindow(
-                          title: 'ร้านที่ 4',
-                          // snippet: 'กรุงเทพมหานคร',
-                        ),
-                      ),
-                      Marker(
-                        markerId: MarkerId('Marker5'),
-                        position: LatLng(13.7230, 100.7805),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-                        infoWindow: InfoWindow(
-                          title: 'ร้านที่ 5',
-                          // snippet: 'กรุงเทพมหานคร',
-                        ),
-                        onTap: () {},
-                      ),
+                    myLocationButtonEnabled: false,
+                    onTap: (argument) {
+                      print(argument);
                     },
+                    markers: getMarkersFromData(marker),
+                    // markers: {
+                    //   Marker(
+                    //     markerId: MarkerId('Marker1'),
+                    //     position: LatLng(lat!, long!),
+                    //     icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+                    //     infoWindow: InfoWindow(
+                    //       title: 'ร้านที่ 1',
+                    //       // snippet: 'กรุงเทพมหานคร',
+                    //     ),
+                    //     onTap: () {
+                    //       double distanceInMeters = Geolocator.distanceBetween(
+                    //         lat!,
+                    //         long!,
+                    //         lat!,
+                    //         long!,
+                    //       );
+                    //       print('ห่างกันกี่เมตร $distanceInMeters');
+                    //       _showBottomSheet(context, distanceInMeters);
+                    //     },
+                    //   ),
+                    //   Marker(
+                    //     markerId: MarkerId('Marker2'),
+                    //     position: LatLng(13.7222, 100.7797),
+                    //     icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+                    //     infoWindow: InfoWindow(
+                    //       title: 'ร้านที่ 2',
+                    //       // snippet: 'กรุงเทพมหานคร',
+                    //     ),
+                    //     onTap: () {
+                    //       double distanceInMeters = Geolocator.distanceBetween(
+                    //         lat!,
+                    //         long!,
+                    //         13.7222,
+                    //         100.7797,
+                    //       );
+                    //       print('ห่างกันกี่เมตร $distanceInMeters');
+                    //       _showBottomSheet(context, distanceInMeters);
+                    //     },
+                    //   ),
+                    //   Marker(
+                    //     markerId: MarkerId('Marker3'),
+                    //     position: LatLng(13.7226, 100.7792),
+                    //     icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+                    //     infoWindow: InfoWindow(
+                    //       title: 'ร้านที่ 3',
+                    //       // snippet: 'กรุงเทพมหานคร',
+                    //     ),
+                    //     onTap: () {
+                    //       double distanceInMeters = Geolocator.distanceBetween(
+                    //         lat!,
+                    //         long!,
+                    //         13.7226,
+                    //         100.7792,
+                    //       );
+                    //       print('ห่างกันกี่เมตร $distanceInMeters');
+                    //       _showBottomSheet(context, distanceInMeters);
+                    //     },
+                    //   ),
+                    //   Marker(
+                    //     markerId: MarkerId('Marker4'),
+                    //     position: LatLng(13.7215, 100.7790),
+                    //     icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+                    //     infoWindow: InfoWindow(
+                    //       title: 'ร้านที่ 4',
+                    //       // snippet: 'กรุงเทพมหานคร',
+                    //     ),
+                    //     onTap: () {
+                    //       double distanceInMeters = Geolocator.distanceBetween(
+                    //         lat!,
+                    //         long!,
+                    //         13.7215,
+                    //         100.7790,
+                    //       );
+                    //       print('ห่างกันกี่เมตร $distanceInMeters');
+                    //       _showBottomSheet(context, distanceInMeters);
+                    //     },
+                    //   ),
+                    //   Marker(
+                    //     markerId: MarkerId('Marker5'),
+                    //     position: LatLng(13.7230, 100.7805),
+                    //     icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+                    //     infoWindow: InfoWindow(
+                    //       title: 'ร้านที่ 5',
+                    //       // snippet: 'กรุงเทพมหานคร',
+                    //     ),
+                    //     onTap: () {
+                    //       double distanceInMeters = Geolocator.distanceBetween(
+                    //         lat!,
+                    //         long!,
+                    //         13.7230,
+                    //         100.7805,
+                    //       );
+                    //       print('ห่างกันกี่เมตร $distanceInMeters');
+                    //       _showBottomSheet(context, distanceInMeters);
+                    //     },
+                    //   ),
+                    // },
                   ),
                 ),
         ],
       ),
     );
   }
+
+  void _showBottomSheet(BuildContext context, double distanceInMeters, Map<String, dynamic> item) {
+    final size = MediaQuery.of(context).size;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent, // พื้นหลังเป็นสีใส
+      builder: (context) {
+        return BottonSheetMap(
+          distanceInMeters: distanceInMeters,
+          item: item,
+        );
+      },
+    );
+  }
+
+  List<Map<String, dynamic>> marker = [
+    {"markerId": "marker1", "lat": 13.7226, "long": 100.7792, "title": "ร้านที่ 3", 'statusCheck': true, 'statusSend': false},
+    {"markerId": "marker2", "lat": 13.7241, "long": 100.7787, "title": "ร้านที่ 4", 'statusCheck': true, 'statusSend': true},
+    {"markerId": "marker3", "lat": 13.7233, "long": 100.7778, "title": "ร้านที่ 5", 'statusCheck': false, 'statusSend': false},
+    {"markerId": "marker4", "lat": 13.7217, "long": 100.7804, "title": "ร้านที่ 6", 'statusCheck': true, 'statusSend': false},
+    {"markerId": "marker5", "lat": 13.7209, "long": 100.7798, "title": "ร้านที่ 7", 'statusCheck': false, 'statusSend': false},
+    {"markerId": "marker6", "lat": 13.7220, "long": 100.7810, "title": "ร้านที่ 8", 'statusCheck': false, 'statusSend': false},
+    {"markerId": "marker7", "lat": 13.7237, "long": 100.7813, "title": "ร้านที่ 9", 'statusCheck': true, 'statusSend': false},
+    {"markerId": "marker8", "lat": 13.7212, "long": 100.7782, "title": "ร้านที่ 10", 'statusCheck': false, 'statusSend': false},
+    {"markerId": "marker9", "lat": 13.7230, "long": 100.7771, "title": "ร้านที่ 11", 'statusCheck': true, 'statusSend': true},
+    {"markerId": "marker10", "lat": 13.7215, "long": 100.7775, "title": "ร้านที่ 12", 'statusCheck': true, 'statusSend': true}
+  ];
 }
+
+//  markerId: MarkerId('Marker3'),
+//                         position: LatLng(13.7226, 100.7792),
+//                         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+//                         infoWindow: InfoWindow(
+//                           title: 'ร้านที่ 3',
+//                           // snippet: 'กรุงเทพมหานคร',
+//                         ),
+//                         onTap: () {
+//                           double distanceInMeters = Geolocator.distanceBetween(
+//                             lat!,
+//                             long!,
+//                             13.7226,
+//                             100.7792,
+//                           );
+//                           print('ห่างกันกี่เมตร $distanceInMeters');
+//                           _showBottomSheet(context, distanceInMeters);
+//                         },
