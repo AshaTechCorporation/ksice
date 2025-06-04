@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:ksice/constants.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -18,12 +19,12 @@ class RegisterPage extends StatelessWidget {
           children: [
             Text(
               'แอปส่งน้ำแข็ง',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: titleTextColor),
             ),
             SizedBox(height: 8),
             Text(
               'ยินดีต้อนรับ',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: titleTextColor),
             ),
             SizedBox(height: 24),
 
@@ -70,7 +71,7 @@ class RegisterPage extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF3B3B98), // ปุ่มสีน้ำเงิน
+                  backgroundColor: buttonColor, // ปุ่มสีน้ำเงิน
                   padding: EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -81,7 +82,7 @@ class RegisterPage extends StatelessWidget {
                 },
                 child: Text(
                   'สมัครสมาชิก',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textWhiteColor),
                 ),
               ),
             ),
@@ -93,13 +94,13 @@ class RegisterPage extends StatelessWidget {
               child: RichText(
                 text: TextSpan(
                   text: 'มีบัญชีอยู่แล้วใช่ไหม ? ',
-                  style: TextStyle(color: Colors.black87),
+                  style: TextStyle(color: Colors.black87, fontSize: 15),
                   children: [
                     TextSpan(
                       text: 'เข้าสู่ระบบที่นี่',
                       style: TextStyle(
-                        color: Color(0xFF3B3B98),
-                        fontWeight: FontWeight.bold,
+                        color: forgetTextColor,
+                        fontWeight: FontWeight.bold, fontSize: 15
                       ),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
