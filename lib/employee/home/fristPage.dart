@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ksice/constants.dart';
 import 'package:ksice/employee/history/historyPage.dart';
 import 'package:ksice/employee/home/homePage.dart';
 import 'package:ksice/employee/map/mapPage.dart';
@@ -17,7 +18,6 @@ class _FristPageState extends State<FristPage> {
   Widget currentScreen = HomePage();
   int selectedIndex = 0;
 
-
   void onItemTapped(int index) {
     setState(() {
       selectedIndex = index;
@@ -32,24 +32,54 @@ class _FristPageState extends State<FristPage> {
       } else {}
     });
   }
-  
+
+  Widget _buildNavItem({
+    required int index,
+    required String image,
+    required String label,
+  }) {
+    final bool isSelected = selectedIndex == index;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(
+          image,
+          width: 24,
+          height: 24,
+          color: isSelected ? Colors.white : Colors.white70,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.white70,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       key: scaffoldKey,
       extendBody: true,
-       body: SafeArea(
+      body: SafeArea(
           child: PageStorage(
         bucket: bucket,
         child: currentScreen,
       )),
       bottomNavigationBar: Container(
         margin: const EdgeInsets.all(16),
+        height: 80,
         decoration: BoxDecoration(
-          color: Colors.deepPurple,
+          color: buttonColor,
           borderRadius: BorderRadius.circular(30),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black12,
               blurRadius: 8,
@@ -63,29 +93,47 @@ class _FristPageState extends State<FristPage> {
             currentIndex: selectedIndex,
             onTap: (index) {
               setState(() => selectedIndex = index);
-              onItemTapped(selectedIndex);
+              onItemTapped(index);
             },
             backgroundColor: Colors.transparent,
             elevation: 0,
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.white70,
             type: BottomNavigationBarType.fixed,
-            items: const [
+            selectedFontSize: 0, // ซ่อนไม่ใช้ label ของระบบ
+            unselectedFontSize: 0,
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
+            items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'หน้าหลัก',
+                icon: _buildNavItem(
+                  index: 0,
+                  image: 'assets/icons/home_icon.png',
+                  label: 'หน้าหลัก',
+                ),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.location_on),
-                label: 'MAP',
+                icon: _buildNavItem(
+                  index: 1,
+                  image: 'assets/icons/map_icon.png',
+                  label: 'MAP',
+                ),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.history),
-                label: 'ประวัติการส่ง',
+                icon: _buildNavItem(
+                  index: 2,
+                  image: 'assets/icons/hitory_icon.png',
+                  label: 'ประวัติการส่ง',
+                ),
+                label: '',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'โปรไฟล์',
+                icon: _buildNavItem(
+                  index: 3,
+                  image: 'assets/icons/profile_icon.png',
+                  label: 'โปรไฟล์',
+                ),
+                label: '',
               ),
             ],
           ),
