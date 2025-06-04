@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ksice/employee/home/selectedMap.dart';
+import 'package:ksice/employee/home/widgets/FormInputField.dart';
 
 class CustomerPage extends StatefulWidget {
   const CustomerPage({super.key});
@@ -33,6 +34,13 @@ class _CustomerPageState extends State<CustomerPage>
   TextEditingController openTimeController = TextEditingController();
   TextEditingController closeDateController = TextEditingController();
   TextEditingController closeTimeController = TextEditingController();
+
+  bool scanned = false;
+
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
 
   final Map<String, TextEditingController> startControllers = {};
   final Map<String, TextEditingController> endControllers = {};
@@ -326,43 +334,88 @@ class _CustomerPageState extends State<CustomerPage>
     return SingleChildScrollView(
       padding: EdgeInsets.all(16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d',
-              width: double.infinity,
-              height: 220,
-              fit: BoxFit.cover,
+          if (!scanned) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d',
+                width: double.infinity,
+                height: 220,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          SizedBox(height: 12),
-          Text(
-            'กรุณาแสกนเอกสารของลูกค้าเพื่อเพิ่มข้อมูล',
-            style: TextStyle(fontSize: 14, color: Colors.black87),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              onPressed: () {
-                // ใส่ฟังก์ชันสแกน
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.indigo,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+            SizedBox(height: 12),
+            Text(
+              'กรุณาแสกนเอกสารของลูกค้าเพื่อเพิ่มข้อมูล',
+              style: TextStyle(fontSize: 14, color: Colors.black87),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    scanned = true; // ✅ ฟิกว่าสแกนสำเร็จ
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.indigo,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  'สแกนเอกสาร',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
-              child: Text(
-                'สแกนเอกสาร',
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ] else ...[
+            Row(
+              children: [
+                Expanded(
+                    child: FormInputField(
+                        hint: 'ชื่อ', controller: firstNameController)),
+                SizedBox(width: 8),
+                Expanded(
+                    child: FormInputField(
+                        hint: 'นามสกุล', controller: lastNameController)),
+              ],
+            ),
+            SizedBox(height: 16),
+            FormInputField(hint: 'ที่อยู่', controller: addressController),
+            SizedBox(height: 16),
+            FormInputField(
+              hint: 'เบอร์โทรศัพท์',
+              controller: phoneController,
+              keyboardType: TextInputType.phone,
+            ),
+            SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () {
+                  // ทำอะไรเมื่อกด "ถัดไป"
+                  print('ชื่อ: ${firstNameController.text}');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.indigo,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text('ถัดไป',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
-          ),
+          ]
         ],
       ),
     );
