@@ -9,6 +9,5 @@ const Color titleTextColor = Color(0xff000000);
 const Color forgetTextColor = Color(0xff666CF4);
 const Color textWhiteColor = Color(0xffFFFFFF);
 
-
-const String publicUrl = 'asha-tech.co.th';
-const String baseUrl = 'https://asha-tech.co.th';
+const String publicUrl = 'ice.dev-asha9.com';
+const String baseUrl = 'https://ice.dev-asha9.com';

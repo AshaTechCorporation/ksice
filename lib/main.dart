@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:ksice/employee/home/fristPage.dart';
+import 'package:ksice/login/Service/loginController.dart';
 import 'package:ksice/login/loginPage.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+String? token;
+late SharedPreferences prefs;
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  prefs = await SharedPreferences.getInstance();
+  token = prefs.getString('token');
   runApp(const MyApp());
 }
 
@@ -12,16 +22,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-        appBarTheme: AppBarTheme(titleTextStyle: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 17, color: Colors.black, fontWeight: FontWeight.bold)),
-        fontFamily: 'SukhumvitSet'
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => LoginController()),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+            appBarTheme: AppBarTheme(titleTextStyle: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 17, color: Colors.black, fontWeight: FontWeight.bold)),
+            fontFamily: 'SukhumvitSet'),
+        home: token == null ? LoginPage() : FristPage(),
       ),
-      home: LoginPage(),
     );
   }
 }
-

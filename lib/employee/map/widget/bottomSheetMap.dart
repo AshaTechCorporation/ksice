@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ksice/employee/map/ordersItem.dart';
+import 'package:ksice/model/routePoints.dart';
 import 'package:ksice/widgets/checkin_success_dialog.dart';
 
 class BottonSheetMap extends StatefulWidget {
   const BottonSheetMap({super.key, required this.distanceInMeters, required this.item});
   final double distanceInMeters;
-  final Map<String, dynamic> item;
+  final RoutePoints item;
 
   @override
   State<BottonSheetMap> createState() => _BottonSheetMapState();
@@ -147,17 +148,18 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
                       width: double.infinity,
                       height: 48,
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (widget.distanceInMeters <= 200) {
-                            if (widget.item['statusCheck'] == false) {
+                            if (widget.item.is_active == 1) {
                               Navigator.pop(context);
-                              _showBottomSheet(context, widget.distanceInMeters, widget.item);
+                              final out = await _showBottomSheet(context, widget.distanceInMeters, widget.item);
+                              print(out);
                             } else {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return OrdersItemsPage(
-                                  shop: widget.item,
-                                );
-                              }));
+                              // Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              //   return OrdersItemsPage(
+                              //     shop: widget.item,
+                              //   );
+                              // }));
                             }
                           }
                           // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => FristPage()), (route) => false);
@@ -169,7 +171,7 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
                           ),
                         ),
                         child: Text(
-                          widget.item['statusCheck'] == false ? 'เช็คอิน' : 'ส่งสินค้า',
+                          widget.item.is_active == 1 ? 'เช็คอิน' : 'ส่งสินค้า',
                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
                         ),
                       ),
@@ -184,7 +186,7 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
     );
   }
 
-  void _showBottomSheet(BuildContext context, double distanceInMeters, Map<String, dynamic> item) {
+  _showBottomSheet(BuildContext context, double distanceInMeters, RoutePoints item) {
     final size = MediaQuery.of(context).size;
     showModalBottomSheet(
       context: context,
@@ -217,7 +219,7 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
 class BottonSheetMapCheckIn extends StatefulWidget {
   const BottonSheetMapCheckIn({super.key, required this.distanceInMeters, required this.item});
   final double distanceInMeters;
-  final Map<String, dynamic> item;
+  final RoutePoints item;
 
   @override
   State<BottonSheetMapCheckIn> createState() => _BottonSheetMapCheckInState();
@@ -300,7 +302,7 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
                       width: double.infinity,
                       height: 48,
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           Navigator.pop(context);
                           showDialog(
                             barrierDismissible: false,
