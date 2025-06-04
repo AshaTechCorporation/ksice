@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -25,6 +26,15 @@ class _CustomerPageState extends State<CustomerPage>
     'วันเสาร์': true,
     'วันอาทิตย์': true,
   };
+  final Map<String, String> thaiToKey = {
+    'วันจันทร์': 'mon',
+    'วันอังคาร': 'tue',
+    'วันพุธ': 'wed',
+    'วันพฤหัสบดี': 'thu',
+    'วันศุกร์': 'fri',
+    'วันเสาร์': 'sat',
+    'วันอาทิตย์': 'sun',
+  };
   List<File> selectedImages = [];
   int iceTankQty = 3;
   int iceCubeQty = 1;
@@ -45,15 +55,28 @@ class _CustomerPageState extends State<CustomerPage>
   final Map<String, TextEditingController> startControllers = {};
   final Map<String, TextEditingController> endControllers = {};
 
-  Future<void> _selectTime(TextEditingController controller) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      controller.text = picked.format(context);
+  String _formatToTime(String input) {
+    // ถ้า input เป็น 'HH:mm' → เปลี่ยนเป็น 'HH:mm:00'
+    if (RegExp(r'^\d{2}:\d{2}$').hasMatch(input)) {
+      return '$input:00';
     }
+    return input; // ถ้าเป็น 'HH:mm:ss' อยู่แล้วก็ใช้เลย
   }
+
+  Future<void> _selectTime(TextEditingController controller) async {
+  final TimeOfDay? picked = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.now(),
+  );
+
+  if (picked != null) {
+    setState(() {
+      controller.text = picked.format(context);
+    });
+  }
+}
+
+
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -91,8 +114,10 @@ class _CustomerPageState extends State<CustomerPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('เพิ่มข้อมูลลูกค้า'),
+        backgroundColor: Colors.white,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -301,7 +326,9 @@ class _CustomerPageState extends State<CustomerPage>
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
               ),
-              onPressed: () => goToStep(1),
+              onPressed: () async {
+                //goToStep(1);
+              },
               child: Text('ถัดไป',
                   style: TextStyle(
                       color: Colors.white, fontWeight: FontWeight.bold)),
@@ -449,7 +476,7 @@ class _CustomerPageState extends State<CustomerPage>
             endControllers.putIfAbsent(day, () => TextEditingController());
 
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
+              padding: EdgeInsets.symmetric(vertical: 6),
               child: Row(
                 children: [
                   Expanded(child: Text(day)),
@@ -557,7 +584,27 @@ class _CustomerPageState extends State<CustomerPage>
             width: double.infinity,
             height: 48,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                final Map<String, int> workDays = {
+                  for (var entry in daySelected.entries)
+                    thaiToKey[entry.key]!: entry.value ? 1 : 0
+                };
+                Map<String, String> workTimes = {};
+                for (final day in thaiToKey.keys) {
+                  final key = thaiToKey[day]!;
+                  final isActive = daySelected[day] ?? false;
+
+                  final start = startControllers[day]?.text.trim() ?? '';
+                  final end = endControllers[day]?.text.trim() ?? '';
+
+                  workTimes['${key}_start_time'] =
+                      isActive && start.isNotEmpty ? _formatToTime(start) : '';
+                  workTimes['${key}_end_time'] =
+                      isActive && end.isNotEmpty ? _formatToTime(end) : '';
+                }
+
+                inspect(workTimes);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
                 shape: RoundedRectangleBorder(
@@ -574,38 +621,27 @@ class _CustomerPageState extends State<CustomerPage>
   }
 
   Widget _timePickerField(TextEditingController controller) {
-    return GestureDetector(
-      onTap: () async {
-        final TimeOfDay? picked = await showTimePicker(
-          context: context,
-          initialTime: TimeOfDay.now(),
-        );
-        if (picked != null) {
-          final now = DateTime.now();
-          final selected = DateTime(
-              now.year, now.month, now.day, picked.hour, picked.minute);
-          final timeString = TimeOfDay.fromDateTime(selected).format(context);
-          setState(() {
-            controller.text = timeString;
-          });
-        }
-      },
+  return GestureDetector(
+    onTap: () => _selectTime(controller),
+    child: AbsorbPointer(
       child: Container(
-        width: 90,
-        height: 40,
+        width: 80,
+        height: 36,
         padding: EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(6),
         ),
-        alignment: Alignment.center,
+        alignment: Alignment.centerLeft,
         child: Text(
-          controller.text.isEmpty ? 'เวลา' : controller.text,
-          style: TextStyle(color: Colors.grey.shade800),
+          controller.text.isEmpty ? 'เลือกเวลา' : controller.text,
+          style: TextStyle(fontSize: 13, color: Colors.black),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _productCard({
     required String title,
