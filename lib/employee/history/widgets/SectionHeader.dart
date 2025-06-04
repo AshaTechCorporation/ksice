@@ -12,7 +12,7 @@ class SectionHeader extends StatelessWidget {
         SizedBox(width: 4),
         Text(
           title,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
         )
       ],
     );

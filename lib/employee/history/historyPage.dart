@@ -16,33 +16,46 @@ class _HistoryPageState extends State<HistoryPage> {
 
   static Map<String, dynamic> sampleData() => {
         'time': '00 พ.ค. 0000   12:00 น.',
-        'image': 'https://img.freepik.com/free-photo/top-view-thai-food-with-copy-space_23-2148747555.jpg', // ตัวอย่างรูป
+        'image': 'https://img.freepik.com/free-photo/top-view-thai-food-with-copy-space_23-2148747555.jpg',
         'title': 'ร้านอาหารพลังใจ',
         'address': 'ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่',
         'status': 'เก็บบันทึกแล้ว',
       };
 
-
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: Colors.white, // ✅ พื้นหลังขาว
       appBar: AppBar(
-        title: Text('ประวัติการส่ง'),
+        backgroundColor: Colors.white,
+        elevation: 1,
+        title: Text('ประวัติการส่ง', style: TextStyle(color: Colors.black, fontSize: 16)),
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         children: [
           SectionHeader(title: 'วันนี้'),
-          ...todayItems.map((item) => DeliveryItem(data: item, onTap: (){
-            print('object');
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>HistoryDetail(data: item)));
-          },)).toList(),
+          ...todayItems.map((item) => DeliveryItem(
+                data: item,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => HistoryDetail(data: item)),
+                  );
+                },
+              )),
           SizedBox(height: 16),
           SectionHeader(title: 'เมื่อวานนี้'),
-          ...yesterdayItems.map((item) => DeliveryItem(data: item, onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>HistoryDetail(data: item)));
-          },)).toList(),
+          ...yesterdayItems.map((item) => DeliveryItem(
+                data: item,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => HistoryDetail(data: item)),
+                  );
+                },
+              )),
         ],
       ),
     );
