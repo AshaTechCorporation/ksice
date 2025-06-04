@@ -41,9 +41,9 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               children: [
                 _stepItem(0, 'ข้อมูลร้าน'),
                 _stepDivider(),
-                _stepItem(1, ''),
+                _stepItem(1, 'ข้อมูลลูกค้า'),
                 _stepDivider(),
-                _stepItem(2, ''),
+                _stepItem(2, 'ข้อมูลบริการ'),
               ],
             ),
           ),
@@ -55,8 +55,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               physics: NeverScrollableScrollPhysics(),
               children: [
                 _tabOneContent(),
-                _noDataContent(),
-                _noDataContent(),
+                _tabTwoContent(),
+                _tabThreeContent(),
               ],
             ),
           )
@@ -196,6 +196,232 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
       ),
     );
   }
+  
+  Widget _tabTwoContent() {
+  return SingleChildScrollView(
+    padding: EdgeInsets.all(16),
+    child: Column(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d',
+            width: double.infinity,
+            height: 220,
+            fit: BoxFit.cover,
+          ),
+        ),
+        SizedBox(height: 12),
+
+        Text(
+          'กรุณาแสกนเอกสารของลูกค้าเพื่อเพิ่มข้อมูล',
+          style: TextStyle(fontSize: 14, color: Colors.black87),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: 24),
+
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton(
+            onPressed: () {
+              // ใส่ฟังก์ชันสแกน
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.indigo,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              'สแกนเอกสาร',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _tabThreeContent() {
+  final days = ['วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์', 'วันอาทิตย์'];
+
+  return SingleChildScrollView(
+    padding: EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('เลือกวันเวลาที่ต้องการส่ง', style: TextStyle(fontWeight: FontWeight.bold)),
+
+        SizedBox(height: 8),
+        ...days.map((day) => Padding(
+              padding: EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.indigo, size: 20),
+                        SizedBox(width: 8),
+                        Text(day),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  _timeField(),
+                  SizedBox(width: 8),
+                  _timeField(),
+                ],
+              ),
+            )),
+
+        SizedBox(height: 16),
+        Text('เพิ่มรายการสินค้า', style: TextStyle(fontWeight: FontWeight.bold)),
+
+        SizedBox(height: 8),
+        Align(
+          alignment: Alignment.centerRight,
+          child: ElevatedButton(
+            onPressed: () {
+              // เพิ่มสินค้า
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.indigo,
+              shape: CircleBorder(),
+              padding: EdgeInsets.all(10),
+            ),
+            child: Icon(Icons.add, color: Colors.white),
+          ),
+        ),
+
+        SizedBox(height: 16),
+
+        // สินค้า 1
+        _productCard(
+          imageUrl: 'https://i.imgur.com/w1urxVi.png',
+          title: 'ถังน้ำแข็ง',
+          options: ['เล็ก', 'กลาง', 'ใหญ่'],
+          quantity: 3,
+        ),
+
+        SizedBox(height: 12),
+
+        // สินค้า 2
+        _productCard(
+          imageUrl: 'https://i.imgur.com/ZK1dLkH.png',
+          title: 'น้ำแข็งก้อน',
+          options: [],
+          quantity: 1,
+        ),
+
+        SizedBox(height: 24),
+
+        // ปุ่มถัดไป
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.indigo,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _timeField() {
+  return Expanded(
+    child: TextField(
+      readOnly: true,
+      decoration: InputDecoration(
+        hintText: 'เวลา',
+        contentPadding: EdgeInsets.symmetric(horizontal: 10),
+        border: OutlineInputBorder(),
+      ),
+    ),
+  );
+}
+
+Widget _productCard({
+  required String imageUrl,
+  required String title,
+  required List<String> options,
+  required int quantity,
+}) {
+  return Container(
+    padding: EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.grey.shade300),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // รูปสินค้า
+        Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                imageUrl,
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  if (options.isNotEmpty)
+                    Wrap(
+                      spacing: 8,
+                      children: options
+                          .map((option) => OutlinedButton(
+                                onPressed: () {},
+                                child: Text(option),
+                              ))
+                          .toList(),
+                    ),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.remove_circle_outline),
+                      ),
+                      Text('$quantity'),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.add_circle_outline),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.delete_outline),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+
+
 
   Widget _noDataContent() {
     return Center(
