@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ksice/constants.dart';
 import 'package:ksice/employee/home/fristPage.dart';
 import 'package:ksice/login/registerPage.dart';
 
@@ -25,12 +26,12 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(height: size.height * 0.25),
             Text(
               'แอปส่งน้ำแข็ง',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: titleTextColor),
             ),
             SizedBox(height: 8),
             Text(
               'ยินดีต้อนรับ',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: titleTextColor),
             ),
             SizedBox(height: 32),
             TextField(
@@ -62,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {},
                 child: Text(
                   'ลืมรหัสผ่าน ?',
-                  style: TextStyle(color: Colors.deepPurple),
+                  style: TextStyle(color: forgetTextColor, fontSize: 15),
                 ),
               ),
             ),
@@ -75,14 +76,14 @@ class _LoginPageState extends State<LoginPage> {
                   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => FristPage()), (route) => false);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: buttonColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: Text(
                   'เข้าสู่ระบบ',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16, color: textWhiteColor),
                 ),
               ),
             ),
@@ -98,10 +99,11 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text.rich(
                       TextSpan(
                         text: 'ยังไม่มีบัญชีผู้ใช้งาน ? ',
+                        style: TextStyle(fontSize: 15),
                         children: [
                           TextSpan(
                             text: 'สมัครสมาชิกที่นี่',
-                            style: TextStyle(color: Colors.deepPurple),
+                            style: TextStyle(color: forgetTextColor, fontSize: 15),
                           ),
                         ],
                       ),
