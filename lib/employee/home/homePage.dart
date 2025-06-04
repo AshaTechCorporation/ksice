@@ -110,20 +110,21 @@ class _HomePageState extends State<HomePage> {
   Widget _buildGaugeWithLabels() {
     return SizedBox(
       width: 360,
-      height: 220,
+      height: 200,
       child: Stack(
         alignment: Alignment.center,
         children: [
+          SizedBox(height: 20,),
           SfRadialGauge(
             axes: <RadialAxis>[
               RadialAxis(
                 minimum: 0,
                 maximum: 100,
                 startAngle: 180,
-                endAngle: 0,
+                endAngle: 360,
                 showLabels: false,
                 showTicks: false,
-                radiusFactor: 0.95,
+                radiusFactor: 0.85,
                 axisLineStyle: const AxisLineStyle(
                   thickness: 0.15,
                   thicknessUnit: GaugeSizeUnit.factor,
@@ -151,13 +152,14 @@ class _HomePageState extends State<HomePage> {
                 annotations: <GaugeAnnotation>[
                   GaugeAnnotation(
                     angle: 90,
-                    positionFactor: 0.5,
+                    positionFactor: 0.3,
                     widget: Text(
                       '${progressValue.toInt()}%',
                       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
+                
               ),
             ],
           ),
@@ -168,23 +170,47 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<Widget> _buildOverlayLabels() {
-    List<int> values = [0, 20, 40, 60, 80, 100];
-    return values.map((v) {
-      double angle = 182 - (v / 100 * 180);
-      double radius = 121;
-      double x = radius * cos(angle * pi / 180);
-      double y = radius * sin(angle * pi / 185);
+  List<int> values = [0, 20, 40, 60, 80, 100];
+  double radius = 85; // ปรับให้พอดีกับวง
+  double centerX = 180; // กลางของ SizedBox width: 360
+  double centerY = 100; // กลางของ SizedBox height: 200
 
-      return Positioned(
-        left: 170 + x,
-        top: 110 - y,
-        child: Text(
-          '$v',
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-        ),
-      );
-    }).toList();
-  }
+  return values.map((v) {
+    double angle = 180 - (v / 100 * 180); // วางตามครึ่งวงกลมด้านบน
+    double x = radius * cos(angle * pi / 180);
+    double y = radius * sin(angle * pi / 180);
+
+    return Positioned(
+      left: centerX + x - 10, // -10 เพื่อให้เลขอยู่ตรงกลาง
+      top: centerY - y - 10,   // -8 เพื่อไม่ให้โดนตัดขอบล่าง
+      child: Text(
+        '$v',
+        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+      ),
+    );
+  }).toList();
+}
+
+
+
+  // List<Widget> _buildOverlayLabels() {
+  //   List<int> values = [0, 20, 40, 60, 80, 100];
+  //   return values.map((v) {
+  //     double angle = 182 - (v / 100 * 180);
+  //     double radius = 121;
+  //     double x = radius * cos(angle * pi / 180);
+  //     double y = radius * sin(angle * pi / 185);
+
+  //     return Positioned(
+  //       left: 170 + x,
+  //       top: 110 - y,
+  //       child: Text(
+  //         '$v',
+  //         style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+  //       ),
+  //     );
+  //   }).toList();
+  // }
 
   Widget _buildStatus(String title, int count, Color color) {
     return Row(
