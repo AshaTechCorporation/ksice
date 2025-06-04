@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:ksice/constants.dart';
 import 'package:ksice/employee/home/customerPage.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
@@ -10,179 +11,240 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final double progressValue = 75.0;
+  late TabController _tabController;
 
-  Widget _label(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: Colors.black87,
-      ),
-    );
+  @override
+  void initState() {
+    _tabController = TabController(length: 2, vsync: this);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text(
+        title: const Text(
           'ภารกิจวันนี้',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 36,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>CustomerPage()));
+              Navigator.push(context, MaterialPageRoute(builder: (_) => CustomerPage()));
             },
             style: TextButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+              backgroundColor: buttonColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
-            child: Text(
-              'เพิ่มลูกค้า',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: const Text('เพิ่มลูกค้า', style: TextStyle(color: Colors.white)),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '00 พ.ค. 0000 12:00 น.',
-                style: TextStyle(color: Colors.grey[700]),
-              ),
-            ),
-            SizedBox(height: 16),
+            Text('00 พ.ค. 0000 12:00 น.', style: TextStyle(color: Colors.grey[700], fontSize: 16)),
+            const SizedBox(height: 16),
 
-            // 📊 กราฟ speed meter
+            // กราฟสถานะ
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('สถานะโดยรวมวันนี้'),
-                  SizedBox(height: 16),
+                  const Text('สถานะโดยรวมวันนี้',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 16),
                   _buildGaugeWithLabels(),
                 ],
               ),
             ),
 
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-            // 🟣 สถานะร้านค้า
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildStatus('ร้านค้าที่ไปแล้ว', 1, Colors.blue),
-                _buildStatus('ร้านคาที่ยังไม่ไป', 1, Colors.green),
-              ],
+            // แท็บร้านค้า
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: TabBar(
+                controller: _tabController,
+                indicatorColor: Colors.transparent,
+                tabs: [
+                  _customTab(true, 'ร้านค้าที่ไปแล้ว', 2, Colors.blue),
+                  _customTab(false, 'ร้านคาที่ยังไม่ไป', 1, Colors.green),
+                ],
+                onTap: (_) {
+                  setState(() {});
+                },
+              ),
             ),
 
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-            // 🧾 รายการร้านค้า
-            _buildShopItem('ร้านอาหารพลังใจ', 'ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่', '0909090900'),
-            _buildShopItem('ร้านอาหารพลังใจ', 'ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่', '0909090900'),
+            // ข้อมูลร้านค้า
+            SizedBox(
+              height: 400,
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  Column(
+                    children: [
+                      _buildShopItem('ร้านอาหารพลังใจ', 'ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่', '0909090900'),
+                      _buildShopItem('ร้านอาหารพลังใจ', 'ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่', '55555555'),
+                    ],
+                  ),
+                  const Center(child: Text('ยังไม่มีข้อมูล')),
+                ],
+              ),
+            )
           ],
         ),
       ),
     );
   }
 
-  Widget _buildGaugeWithLabels() {
-    return SizedBox(
-      width: 360,
-      height: 200,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          SizedBox(height: 20,),
-          SfRadialGauge(
-            axes: <RadialAxis>[
-              RadialAxis(
-                minimum: 0,
-                maximum: 100,
-                startAngle: 180,
-                endAngle: 360,
-                showLabels: false,
-                showTicks: false,
-                radiusFactor: 0.85,
-                axisLineStyle: const AxisLineStyle(
-                  thickness: 0.15,
-                  thicknessUnit: GaugeSizeUnit.factor,
-                ),
-                ranges: <GaugeRange>[
-                  GaugeRange(startValue: 0, endValue: 20, color: Colors.green, startWidth: 0.45, endWidth: 0.45, sizeUnit: GaugeSizeUnit.factor),
-                  GaugeRange(startValue: 20, endValue: 40, color: Colors.lightGreen, startWidth: 0.45, endWidth: 0.45, sizeUnit: GaugeSizeUnit.factor),
-                  GaugeRange(startValue: 40, endValue: 60, color: Colors.yellow, startWidth: 0.45, endWidth: 0.45, sizeUnit: GaugeSizeUnit.factor),
-                  GaugeRange(startValue: 60, endValue: 80, color: Colors.orange, startWidth: 0.45, endWidth: 0.45, sizeUnit: GaugeSizeUnit.factor),
-                  GaugeRange(startValue: 80, endValue: 100, color: Colors.red, startWidth: 0.45, endWidth: 0.45, sizeUnit: GaugeSizeUnit.factor),
-                ],
-                pointers: <GaugePointer>[
-                  NeedlePointer(
-                    value: progressValue,
-                    enableAnimation: true,
-                    animationDuration: 800,
-                    needleLength: 0.7,
-                    lengthUnit: GaugeSizeUnit.factor,
-                    needleStartWidth: 1,
-                    needleEndWidth: 5,
-                    needleColor: Colors.black,
-                    knobStyle: const KnobStyle(color: Colors.black),
-                  ),
-                ],
-                annotations: <GaugeAnnotation>[
-                  GaugeAnnotation(
-                    angle: 90,
-                    positionFactor: 0.3,
-                    widget: Text(
-                      '${progressValue.toInt()}%',
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-                
-              ),
-            ],
+  Widget _customTab(bool isActive, String title, int count, Color color) {
+    final currentIndex = _tabController.index;
+    final index = title.contains('ไปแล้ว') ? 0 : 1;
+    final active = currentIndex == index;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black)),
+            const SizedBox(width: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
+              child: Text('$count', style: const TextStyle(color: Colors.white, fontSize: 12)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        if (active)
+          Container(
+            height: 2.5,
+            width: 80,
+            color: color,
           ),
-          ..._buildOverlayLabels(),
-        ],
-      ),
+      ],
     );
   }
 
-  List<Widget> _buildOverlayLabels() {
+  Widget _buildGaugeWithLabels() {
+  return SizedBox(
+    width: 360,
+    height: 200,
+    child: Stack(
+      alignment: Alignment.center,
+      children: [
+        SfRadialGauge(
+          axes: <RadialAxis>[
+            RadialAxis(
+              minimum: 0,
+              maximum: 100,
+              startAngle: 180,
+              endAngle: 360,
+              showLabels: false,
+              showTicks: false,
+              radiusFactor: 0.85,
+              axisLineStyle: const AxisLineStyle(
+                thickness: 0.15,
+                thicknessUnit: GaugeSizeUnit.factor,
+              ),
+              ranges: [
+                _gaugeRange(0, 20, Colors.green),
+                _gaugeRange(20, 40, Colors.lightGreen),
+                _gaugeRange(40, 60, Colors.yellow),
+                _gaugeRange(60, 80, Colors.orange),
+                _gaugeRange(80, 100, Colors.red),
+              ],
+              pointers: <GaugePointer>[
+                NeedlePointer(
+                  value: progressValue,
+                  enableAnimation: true,
+                  animationDuration: 800,
+                  needleLength: 0.7,
+                  lengthUnit: GaugeSizeUnit.factor,
+                  needleStartWidth: 2, // ✅ ปรับให้หนาขึ้น
+                  needleEndWidth: 4,
+                  needleColor: Colors.black,
+                  knobStyle: const KnobStyle(
+                    color: Colors.black,
+                    borderColor: Colors.black,
+                    borderWidth: 1.5,
+                    sizeUnit: GaugeSizeUnit.logicalPixel,
+                  ),
+                ),
+              ],
+              annotations: <GaugeAnnotation>[
+                GaugeAnnotation(
+                  angle: 90,
+                  positionFactor: 0.3,
+                  widget: Text(
+                    '${progressValue.toInt()}%',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        ..._buildOverlayLabels(), // ✅ ตัวเลขบนเส้น
+      ],
+    ),
+  );
+}
+
+// 🔧 เพิ่มแยก Range สีพร้อม border
+GaugeRange _gaugeRange(double start, double end, Color color) {
+  return GaugeRange(
+    startValue: start,
+    endValue: end,
+    color: color,
+    sizeUnit: GaugeSizeUnit.factor,
+    startWidth: 0.45,
+    endWidth: 0.45,
+  );
+}
+
+List<Widget> _buildOverlayLabels() {
   List<int> values = [0, 20, 40, 60, 80, 100];
-  double radius = 85; // ปรับให้พอดีกับวง
-  double centerX = 180; // กลางของ SizedBox width: 360
-  double centerY = 100; // กลางของ SizedBox height: 200
+  double radius = 95; // ✅ ขยับให้อยู่บนโค้ง
+  double centerX = 180;
+  double centerY = 100;
 
   return values.map((v) {
-    double angle = 180 - (v / 100 * 180); // วางตามครึ่งวงกลมด้านบน
+    double angle = 180 - (v / 100 * 180);
     double x = radius * cos(angle * pi / 180);
     double y = radius * sin(angle * pi / 180);
 
     return Positioned(
-      left: centerX + x - 10, // -10 เพื่อให้เลขอยู่ตรงกลาง
-      top: centerY - y - 10,   // -8 เพื่อไม่ให้โดนตัดขอบล่าง
+      left: centerX + x - 10,
+      top: centerY - y - 9,
       child: Text(
         '$v',
         style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
@@ -192,52 +254,15 @@ class _HomePageState extends State<HomePage> {
 }
 
 
-
-  // List<Widget> _buildOverlayLabels() {
-  //   List<int> values = [0, 20, 40, 60, 80, 100];
-  //   return values.map((v) {
-  //     double angle = 182 - (v / 100 * 180);
-  //     double radius = 121;
-  //     double x = radius * cos(angle * pi / 180);
-  //     double y = radius * sin(angle * pi / 185);
-
-  //     return Positioned(
-  //       left: 170 + x,
-  //       top: 110 - y,
-  //       child: Text(
-  //         '$v',
-  //         style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-  //       ),
-  //     );
-  //   }).toList();
-  // }
-
-  Widget _buildStatus(String title, int count, Color color) {
-    return Row(
-      children: [
-        Text(title, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
-        SizedBox(width: 4),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
-          child: Text(
-            '$count',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildShopItem(String name, String address, String phone) {
     return Container(
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(
-          left: BorderSide(color: Colors.blue, width: 3),
-        ),
+        // border: Border(
+        //   left: BorderSide(color: Colors.blue, width: 3),
+        // ),
         boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 2)],
         borderRadius: BorderRadius.circular(8),
       ),
@@ -251,9 +276,7 @@ class _HomePageState extends State<HomePage> {
                 backgroundImage: NetworkImage('https://cdn-icons-png.flaticon.com/512/3075/3075977.png'),
               ),
               SizedBox(width: 8),
-              Expanded(
-                child: Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
+              Expanded(child: Text(name, style: TextStyle(fontWeight: FontWeight.bold))),
               Text(phone),
             ],
           ),
@@ -274,7 +297,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildTag(String text, Color color) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: color.withOpacity(0.15),
         borderRadius: BorderRadius.circular(12),
