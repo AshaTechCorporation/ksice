@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ksice/employee/map/ordersItem.dart';
+import 'package:ksice/widgets/checkin_success_dialog.dart';
 
 class BottonSheetMap extends StatefulWidget {
   const BottonSheetMap({super.key, required this.distanceInMeters, required this.item});
@@ -153,7 +154,9 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
                               _showBottomSheet(context, widget.distanceInMeters, widget.item);
                             } else {
                               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return OrdersItemsPage();
+                                return OrdersItemsPage(
+                                  shop: widget.item,
+                                );
                               }));
                             }
                           }
@@ -167,7 +170,7 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
                         ),
                         child: Text(
                           widget.item['statusCheck'] == false ? 'เช็คอิน' : 'ส่งสินค้า',
-                          style: TextStyle(fontSize: 16, color: Colors.white),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
                         ),
                       ),
                     ),
@@ -298,10 +301,17 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
                       height: 48,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (widget.distanceInMeters <= 200) {
-                            Navigator.pop(context);
-                          }
-                          // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => FristPage()), (route) => false);
+                          Navigator.pop(context);
+                          showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (context) {
+                              Future.delayed(Duration(seconds: 3), () {
+                                Navigator.of(context).pop(true);
+                              });
+                              return CheckInSuccessDialog(timeText: '12:00 น.');
+                            },
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: widget.distanceInMeters >= 200 ? Colors.grey : const Color(0xFF2D3194),
@@ -311,7 +321,7 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
                         ),
                         child: Text(
                           'ยืนยัน',
-                          style: TextStyle(fontSize: 16, color: Colors.white),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
                         ),
                       ),
                     ),

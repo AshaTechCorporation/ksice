@@ -16,6 +16,8 @@ class _MapPageState extends State<MapPage> {
   GoogleMapController? mapController;
   double? lat;
   double? long;
+  LatLng? currentPosition;
+  BitmapDescriptor? customIcon;
   bool load = false;
   Set<Marker> markers = {}; // Set of markers on the map
 
@@ -23,8 +25,18 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _loadCustomIcon();
       await getLocation();
     });
+  }
+
+  Future<void> _loadCustomIcon() async {
+    customIcon = await BitmapDescriptor.asset(
+      ImageConfiguration(),
+      width: 40,
+      height: 50,
+      'assets/images/marker.png',
+    );
   }
 
   getLocation() async {
@@ -39,6 +51,7 @@ class _MapPageState extends State<MapPage> {
         );
         if (mounted) {
           setState(() {
+            currentPosition = LatLng(position.latitude, position.longitude);
             lat = position.latitude;
             long = position.longitude;
             load = true;
@@ -57,6 +70,8 @@ class _MapPageState extends State<MapPage> {
       );
       if (mounted) {
         setState(() {
+          currentPosition = LatLng(position.latitude, position.longitude);
+
           lat = position.latitude;
           long = position.longitude;
           load = true;
@@ -66,7 +81,7 @@ class _MapPageState extends State<MapPage> {
   }
 
   Set<Marker> getMarkersFromData(List<Map<String, dynamic>> data) {
-    return data.map((item) {
+    final Set<Marker> allMarkers = data.map((item) {
       return Marker(
         markerId: MarkerId(item['markerId']),
         position: LatLng(item['lat'], item['long']),
@@ -84,6 +99,20 @@ class _MapPageState extends State<MapPage> {
         },
       );
     }).toSet();
+
+    // เพิ่มตำแหน่งตัวเอง (ถ้ามีข้อมูล)
+    if (currentPosition != null) {
+      allMarkers.add(
+        Marker(
+          markerId: MarkerId('my_location'),
+          position: currentPosition!,
+          icon: customIcon ?? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          infoWindow: InfoWindow(title: 'ตำแหน่งของฉัน'),
+        ),
+      );
+    }
+
+    return allMarkers;
   }
 
   @override
@@ -113,13 +142,6 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final Set<Marker> markers = marker.map((item) {
-      return Marker(
-        markerId: MarkerId(item['markerId']),
-        position: LatLng(item['lat'], item['long']),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-      );
-    }).toSet();
     return Scaffold(
       appBar: AppBar(
         title: Text('Map'),
@@ -142,9 +164,10 @@ class _MapPageState extends State<MapPage> {
                       GoogleMap(
                         initialCameraPosition: CameraPosition(
                           target: LatLng(lat!, long!), // ตำแหน่งเริ่มต้นของกล้อง
-                          zoom: 16, // การซูมเริ่มต้น
+                          zoom: 17, // การซูมเริ่มต้น
                         ),
                         myLocationButtonEnabled: false,
+                        myLocationEnabled: false,
                         onMapCreated: (controller) async {
                           mapController = controller;
                           await Future.delayed(Duration(milliseconds: 100));
@@ -267,7 +290,7 @@ class _MapPageState extends State<MapPage> {
                             child: Row(
                               children: [
                                 CircleAvatar(
-                                  radius: 10,
+                                  radius: 8,
                                   backgroundImage: NetworkImage('https://cdn-icons-png.flaticon.com/512/3075/3075977.png'),
                                 ),
                                 SizedBox(
@@ -275,7 +298,7 @@ class _MapPageState extends State<MapPage> {
                                 ),
                                 Text(
                                   item['title'],
-                                  style: TextStyle(fontSize: 12, color: Colors.black),
+                                  style: TextStyle(fontSize: 10, color: Colors.black),
                                 ),
                               ],
                             ),
@@ -309,7 +332,7 @@ class _MapPageState extends State<MapPage> {
     {"markerId": "marker1", "lat": 13.7226, "long": 100.7792, "title": "ร้านที่ 3", 'statusCheck': true, 'statusSend': false},
     {"markerId": "marker2", "lat": 13.7241, "long": 100.7787, "title": "ร้านที่ 4", 'statusCheck': true, 'statusSend': true},
     {"markerId": "marker3", "lat": 13.7233, "long": 100.7778, "title": "ร้านที่ 5", 'statusCheck': false, 'statusSend': false},
-    {"markerId": "marker4", "lat": 13.7217, "long": 100.7804, "title": "ร้านที่ 6", 'statusCheck': true, 'statusSend': false},
+    {"markerId": "marker4", "lat": 13.7217, "long": 100.7815, "title": "ร้านที่ 6", 'statusCheck': true, 'statusSend': false},
     {"markerId": "marker5", "lat": 13.7209, "long": 100.7798, "title": "ร้านที่ 7", 'statusCheck': false, 'statusSend': false},
     {"markerId": "marker6", "lat": 13.7220, "long": 100.7810, "title": "ร้านที่ 8", 'statusCheck': false, 'statusSend': false},
     {"markerId": "marker7", "lat": 13.7237, "long": 100.7813, "title": "ร้านที่ 9", 'statusCheck': true, 'statusSend': false},
