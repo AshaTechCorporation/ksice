@@ -708,11 +708,11 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               onPressed: () async {
                 try {
                   LoadingDialog.open(context);
-                  selectedImages.clear();
-                  if (selectedImages.isNotEmpty) {
-                    for (var i = 0; i < selectedImages.length; i++) {
-                      final image = await UoloadService.addImage(file: File(selectedImages[i].path), path: 'images/asset/');
-                      selectedImages.add(image);
+                  shopImages.clear();
+                  if (shopImages.isNotEmpty) {
+                    for (var i = 0; i < shopImages.length; i++) {
+                      final image = await UoloadService.addImage(file: File(shopImages[i].path), path: 'images/asset/');
+                      listImageAPI!.add(image);
                     }
                   }
 
