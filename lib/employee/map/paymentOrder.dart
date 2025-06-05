@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:ksice/employee/map/successPage.dart';
+import 'package:ksice/model/productcategory.dart';
 import 'package:ksice/model/routePoints.dart';
 import 'package:ksice/widgets/checkin_success_dialog.dart';
 
 class PaymentOrderPage extends StatefulWidget {
   const PaymentOrderPage({super.key, required this.shop, required this.itemsSelect});
   final RoutePoints shop;
-  final List<Map<String, dynamic>> itemsSelect;
+  final List<ProductCategory> itemsSelect;
 
   @override
   State<PaymentOrderPage> createState() => _PaymentOrderPageState();
@@ -19,11 +20,20 @@ class _PaymentOrderPageState extends State<PaymentOrderPage> {
     'โอนเงิน',
   ];
   int? sumPrice;
+  Map<int, int> quantities = {};
+  @override
+  void initState() {
+    super.initState();
+    for (var item in widget.itemsSelect) {
+      quantities[item.id] = 1;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    sumPrice = widget.itemsSelect.fold(0, (sum, item) => sum! + int.parse(item['priceTotal'].toString()));
+    sumPrice = widget.itemsSelect.fold(0, (sum, item) => sum! + (100 ?? 0));
+
     return Scaffold(
       appBar: AppBar(
         title: Text('สรุปยอดชำระเงิน'),
@@ -112,143 +122,123 @@ class _PaymentOrderPageState extends State<PaymentOrderPage> {
             ),
             Column(
               children: List.generate(
-                  widget.itemsSelect.length,
-                  (index) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        child: Column(
+                widget.itemsSelect.length,
+                (index) {
+                  final product = widget.itemsSelect[index];
+                  final qty = quantities[product.id] ?? 1;
+                  final price = 100;
+                  final priceTotal = qty * price;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    product.image ?? 'https://cdn-icons-png.flaticon.com/512/1046/1046857.png',
+                                    fit: BoxFit.fitHeight,
+                                    width: size.width * 0.25,
+                                    height: size.height * 0.12,
+                                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                                      'assets/images/ice.png',
+                                      width: size.width * 0.25,
+                                      height: size.height * 0.12,
+                                      fit: BoxFit.fitHeight,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.asset(
-                                        'assets/images/ice.png',
-                                        fit: BoxFit.fitHeight,
-                                        width: size.width * 0.25,
-                                        height: size.height * 0.12,
-                                        errorBuilder: (context, error, stackTrace) => Image.asset(
-                                          'assets/images/ice.png',
-                                          width: size.width * 0.25,
-                                          height: size.height * 0.12,
-                                          fit: BoxFit.fitHeight,
-                                        ),
+                                    SizedBox(
+                                      width: size.width * 0.4,
+                                      child: Text(
+                                        product.name ?? '-',
+                                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                    Row(
                                       children: [
-                                        SizedBox(
-                                          width: size.width * 0.4,
-                                          child: Text(
-                                            widget.itemsSelect[index]['name'],
-                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
+                                        InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              if (qty > 1) {
+                                                quantities[product.id] = qty - 1;
+                                              } else {
+                                                widget.itemsSelect.removeAt(index);
+                                                quantities.remove(product.id);
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            width: size.width * 0.07,
+                                            height: size.width * 0.07,
+                                            decoration: BoxDecoration(color: const Color(0xFFCFD8DC), borderRadius: BorderRadius.circular(6)),
+                                            child: const Icon(Icons.remove, size: 15),
                                           ),
                                         ),
-                                        Row(
-                                          children: [
-                                            InkWell(
-                                              onTap: () {
-                                                if (widget.itemsSelect[index]['qty'] > 1) {
-                                                  final current = widget.itemsSelect[index]['qty'];
-                                                  final newValue = current! - 1;
-                                                  widget.itemsSelect[index]['qty'] = newValue;
-                                                  setState(() {
-                                                    widget.itemsSelect[index]['priceTotal'] = (widget.itemsSelect[index]['qty'] * widget.itemsSelect[index]['price']);
-                                                  });
-                                                } else {
-                                                  setState(() {
-                                                    widget.itemsSelect.removeAt(index);
-                                                  });
-                                                }
-                                              },
-                                              child: Container(
-                                                width: size.width * 0.07,
-                                                height: size.width * 0.07,
-                                                decoration: BoxDecoration(color: Color(0xFFCFD8DC), borderRadius: BorderRadius.circular(6)),
-                                                child: Icon(
-                                                  Icons.remove,
-                                                  size: 15,
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            Text(
-                                              widget.itemsSelect[index]['qty'].toString(),
-                                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            InkWell(
-                                              onTap: () {
-                                                final current = widget.itemsSelect[index]['qty'];
-                                                final newValue = current! + 1;
-                                                widget.itemsSelect[index]['qty'] = newValue;
-                                                setState(() {
-                                                  widget.itemsSelect[index]['priceTotal'] = (widget.itemsSelect[index]['qty'] * widget.itemsSelect[index]['price']);
-                                                });
-                                              },
-                                              child: Container(
-                                                width: size.width * 0.07,
-                                                height: size.width * 0.07,
-                                                decoration: BoxDecoration(color: Color(0xFFCFD8DC), borderRadius: BorderRadius.circular(6)),
-                                                child: Icon(
-                                                  Icons.add,
-                                                  size: 15,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        )
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          qty.toString(),
+                                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              quantities[product.id] = qty + 1;
+                                            });
+                                          },
+                                          child: Container(
+                                            width: size.width * 0.07,
+                                            height: size.width * 0.07,
+                                            decoration: BoxDecoration(color: const Color(0xFFCFD8DC), borderRadius: BorderRadius.circular(6)),
+                                            child: const Icon(Icons.add, size: 15),
+                                          ),
+                                        ),
                                       ],
-                                    ),
+                                    )
                                   ],
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          widget.itemsSelect.removeAt(index);
-                                        });
-                                      },
-                                      child: Icon(
-                                        Icons.delete_outline,
-                                        size: 35,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      '${widget.itemsSelect[index]['priceTotal'].toString()} บาท',
-                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                )
                               ],
                             ),
-                            Divider()
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      widget.itemsSelect.removeAt(index);
+                                      quantities.remove(product.id);
+                                    });
+                                  },
+                                  child: const Icon(Icons.delete_outline, size: 35, color: Colors.grey),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  '$priceTotal บาท',
+                                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            )
                           ],
                         ),
-                      )),
-            ),
+                        const Divider()
+                      ],
+                    ),
+                  );
+                },
+              ),
+            )
           ],
         ),
       ),

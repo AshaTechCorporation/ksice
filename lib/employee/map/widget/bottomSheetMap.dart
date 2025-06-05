@@ -42,7 +42,8 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
         minChildSize: 0.3,
         builder: (_, scrollController) {
           return Container(
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+            decoration:
+                BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -97,7 +98,8 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(widget.item.member_branch?.name ?? ' - ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                                        Text(widget.item.member_branch?.contact_phone ?? ' - ', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
+                                        Text(widget.item.member_branch?.contact_phone ?? ' - ',
+                                            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
                                       ],
                                     ),
                                     SizedBox(height: 4),
@@ -200,19 +202,19 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
                     height: 48,
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (widget.distanceInMeters <= 5) {
-                          if (widget.item.is_active == 1) {
-                            Navigator.pop(context);
-                            final out = await _showBottomSheet(context, widget.item, widget.lat, widget.long);
-                            print(out);
-                          } else {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return OrdersItemsPage(
-                                shop: widget.item,
-                              );
-                            }));
-                          }
-                        }
+                        // if (widget.distanceInMeters <= 5) {
+                        //   if (widget.item.is_active == 1) {
+                        //     Navigator.pop(context);
+                        //     final out = await _showBottomSheet(context, widget.item, widget.lat, widget.long);
+                        //     print(out);
+                        //   } else {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return OrdersItemsPage(
+                            shop: widget.item,
+                          );
+                        }));
+                        //   }
+                        // }
                         // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => FristPage()), (route) => false);
                       },
                       style: ElevatedButton.styleFrom(
@@ -293,7 +295,8 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Container(
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+              decoration:
+                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -325,7 +328,8 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(widget.item.member_branch?.name ?? ' - ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                                          Text(widget.item.member_branch?.contact_phone ?? ' - ', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
+                                          Text(widget.item.member_branch?.contact_phone ?? ' - ',
+                                              style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
                                         ],
                                       ),
                                       SizedBox(height: 4),
@@ -405,7 +409,12 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
                               final image = await UoloadService.addImage(file: listimages, path: 'images/asset/');
                               imageAPI = image;
                             }
-                            await HomeService.checkInPoint(route_id: widget.item.route_id!, route_point_id: widget.item.id, latitude: widget.lat, longitude: widget.long, image: imageAPI);
+                            await HomeService.checkInPoint(
+                                route_id: widget.item.route_id!,
+                                route_point_id: widget.item.id,
+                                latitude: widget.lat,
+                                longitude: widget.long,
+                                image: imageAPI);
                             LoadingDialog.close(context);
                             await showDialog(
                               barrierDismissible: false,
