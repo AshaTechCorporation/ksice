@@ -191,10 +191,8 @@ class _ListCarPageState extends State<ListCarPage> {
       body: selectedPosition == null
           ? SizedBox(
               width: MediaQuery.of(context).size.width,
-              height: size.height * 0.721,
-              child: Center(
-                child: Text('กรุณาเปิดตำแหน่ง'),
-              ),
+              height: size.height * 0.75,
+              child: Center(child: CircularProgressIndicator()),
             )
           : Stack(
               children: [
