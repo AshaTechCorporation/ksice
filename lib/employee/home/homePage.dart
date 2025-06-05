@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 indicatorColor: Colors.transparent,
                 tabs: [
                   _customTab(true, 'ร้านค้าที่ไปแล้ว', 2, Colors.blue),
-                  _customTab(false, 'ร้านคาที่ยังไม่ไป', 1, Colors.green),
+                  _customTab(false, 'ร้านคาที่ยังไม่ไป', 0, Colors.green),
                 ],
                 onTap: (_) {
                   setState(() {});
@@ -112,7 +112,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       _buildShopItem('ร้านอาหารพลังใจ', 'ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่', '55555555'),
                     ],
                   ),
-                  const Center(child: Text('ยังไม่มีข้อมูล')),
+                  Column(
+                    children: [
+                      SizedBox(height: 30,),
+                      Text('ยังไม่มีข้อมูล'),
+                    ],
+                  ),
                 ],
               ),
             )
