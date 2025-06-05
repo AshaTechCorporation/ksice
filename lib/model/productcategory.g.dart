@@ -15,6 +15,9 @@ ProductCategory _$ProductCategoryFromJson(Map<String, dynamic> json) =>
       json['description'] as String?,
       json['image'] as String?,
       (json['is_active'] as num?)?.toInt(),
+      (json['product_units'] as List<dynamic>?)
+          ?.map((e) => ProductUnits.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ProductCategoryToJson(ProductCategory instance) =>
@@ -26,4 +29,5 @@ Map<String, dynamic> _$ProductCategoryToJson(ProductCategory instance) =>
       'description': instance.description,
       'image': instance.image,
       'is_active': instance.is_active,
+      'product_units': instance.product_units,
     };

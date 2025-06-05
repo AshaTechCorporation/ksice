@@ -10,6 +10,7 @@ import 'package:ksice/constants.dart';
 import 'package:ksice/employee/home/selectedMap.dart';
 import 'package:ksice/employee/home/services/homeService.dart';
 import 'package:ksice/employee/home/widgets/FormInputField.dart';
+import 'package:ksice/model/productcategory.dart';
 import 'package:ksice/upload/uploadService.dart';
 import 'package:ksice/utils/ApiExeption.dart';
 import 'package:ksice/widgets/camera.dart';
@@ -23,7 +24,8 @@ class CustomerPage extends StatefulWidget {
   State<CustomerPage> createState() => _CustomerPageState();
 }
 
-class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMixin {
+class _CustomerPageState extends State<CustomerPage>
+    with TickerProviderStateMixin {
   late TabController _tabController;
   final Map<String, bool> daySelected = {
     'วันจันทร์': true,
@@ -74,6 +76,9 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
 
   String? imageAPI;
   List<String>? listImageAPI;
+  List<ProductCategory> productCategory = [];
+  List<ProductCategory> selectedProducts = [];
+  Map<int, int> quantities = {};
 
   String _twoDigits(int n) => n.toString().padLeft(2, '0');
 
@@ -82,7 +87,9 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
     input = input.replaceAll(RegExp(r'[\u202F\u00A0\s]+'), ' ').trim();
 
     // ตรวจสอบรูปแบบ 12 ชั่วโมง เช่น "1:30 PM"
-    final match12 = RegExp(r'^(\d{1,2}):(\d{2})\s?(AM|PM)$', caseSensitive: false).firstMatch(input);
+    final match12 =
+        RegExp(r'^(\d{1,2}):(\d{2})\s?(AM|PM)$', caseSensitive: false)
+            .firstMatch(input);
     if (match12 != null) {
       int hour = int.parse(match12.group(1)!);
       int minute = int.parse(match12.group(2)!);
@@ -146,6 +153,37 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
   void initState() {
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await getProductCategory();
+    });
+  }
+
+  Future<void> getProductCategory() async {
+    try {
+      LoadingDialog.open(context);
+      final _productCategory = await HomeService.getProductCategory();
+      LoadingDialog.close(context);
+      if (!mounted) return;
+      if (_productCategory.isNotEmpty) {
+        productCategory = _productCategory;
+      }
+      setState(() {});
+    } on Exception catch (e) {
+      LoadingDialog.close(context);
+      if (!mounted) return;
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return ErrorDialog(
+            description: '${e}',
+            pressYes: () {
+              Navigator.pop(context);
+            },
+          );
+        },
+      );
+    }
   }
 
   void goToStep(int index) {
@@ -289,9 +327,13 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
           SizedBox(height: 8),
           Row(
             children: [
-              Expanded(child: _imageButton('เพิ่มรูปภาพ', Icons.add_a_photo, fromCamera: false)),
+              Expanded(
+                  child: _imageButton('เพิ่มรูปภาพ', Icons.add_a_photo,
+                      fromCamera: false)),
               SizedBox(width: 8),
-              Expanded(child: _imageButton('ถ่ายภาพ', Icons.camera_alt_outlined, fromCamera: true)),
+              Expanded(
+                  child: _imageButton('ถ่ายภาพ', Icons.camera_alt_outlined,
+                      fromCamera: true)),
             ],
           ),
           SizedBox(height: 12),
@@ -310,18 +352,21 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                         padding: EdgeInsets.only(right: 8),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.file(file, width: 64, height: 64, fit: BoxFit.cover),
+                          child: Image.file(file,
+                              width: 64, height: 64, fit: BoxFit.cover),
                         ),
                       ),
                       Positioned(
                         top: 0,
                         right: 0,
                         child: GestureDetector(
-                          onTap: () => setState(() => shopImages.removeAt(index)),
+                          onTap: () =>
+                              setState(() => shopImages.removeAt(index)),
                           child: CircleAvatar(
                             radius: 10,
                             backgroundColor: Colors.black54,
-                            child: Icon(Icons.close, size: 14, color: Colors.white),
+                            child: Icon(Icons.close,
+                                size: 14, color: Colors.white),
                           ),
                         ),
                       ),
@@ -349,12 +394,14 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                     );
 
                     if (result != null) {
-                      print('เลือกแล้ว: lat=${result!.latitude}, lng=${result!.longitude}');
+                      print(
+                          'เลือกแล้ว: lat=${result!.latitude}, lng=${result!.longitude}');
                     }
                   },
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6), // ✅ ลดความมนจาก 12 → 6 หรือ 4
+                      borderRadius: BorderRadius.circular(
+                          6), // ✅ ลดความมนจาก 12 → 6 หรือ 4
                     ),
                   ),
                   child: const Text('เลือกแผนที่'),
@@ -377,7 +424,9 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               onPressed: () async {
                 goToStep(1);
               },
-              child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: Text('ถัดไป',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           )
         ],
@@ -448,14 +497,17 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               height: 48,
               child: ElevatedButton(
                 onPressed: () async {
-                  final out = await Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  final out = await Navigator.push(context,
+                      MaterialPageRoute(builder: (context) {
                     return IDCardCameraPage();
                   }));
                   if (out != null) {
                     try {
                       LoadingDialog.open(context);
-                      final ocr = await UoloadService.ocrIdCard(file: File(out.path));
-                      final image = await UoloadService.addImage(file: File(out.path), path: 'images/asset/');
+                      final ocr =
+                          await UoloadService.ocrIdCard(file: File(out.path));
+                      final image = await UoloadService.addImage(
+                          file: File(out.path), path: 'images/asset/');
 
                       setState(() {
                         imageAPI = image;
@@ -534,16 +586,21 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                 ),
                 child: Text(
                   'สแกนบัตรประชาชน',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
           ] else ...[
             Row(
               children: [
-                Expanded(child: FormInputField(hint: 'ชื่อ', controller: card_fname)),
+                Expanded(
+                    child:
+                        FormInputField(hint: 'ชื่อ', controller: card_fname)),
                 SizedBox(width: 8),
-                Expanded(child: FormInputField(hint: 'นามสกุล', controller: card_lname)),
+                Expanded(
+                    child: FormInputField(
+                        hint: 'นามสกุล', controller: card_lname)),
               ],
             ),
             SizedBox(height: 16),
@@ -570,7 +627,9 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Text('ถัดไป',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
           ]
@@ -587,7 +646,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('เลือกวันเวลาที่ต้องการส่ง', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('เลือกวันเวลาที่ต้องการส่ง',
+              style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 12),
           ...days.map((day) {
             startControllers.putIfAbsent(day, () => TextEditingController());
@@ -611,7 +671,9 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                   _timePickerField(startControllers[day]!),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
-                    child: Text('-', style: TextStyle(fontSize: 16, color: Colors.grey.shade700)),
+                    child: Text('-',
+                        style: TextStyle(
+                            fontSize: 16, color: Colors.grey.shade700)),
                   ),
                   _timePickerField(endControllers[day]!),
                 ],
@@ -638,7 +700,346 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                   borderRadius: BorderRadius.circular(8), // มุมโค้ง
                 ),
                 child: IconButton(
-                  onPressed: _pickImage,
+                  onPressed: () async {
+                    final _selectProduct = await showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) {
+                        Set<int> selectedIds = {};
+
+                        return StatefulBuilder(builder: (context, setState) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            insetPadding: const EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 24),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.85,
+                              height: MediaQuery.of(context).size.height * 0.7,
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // หัวข้อ + ปิด
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        'รายการสินค้า',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      InkWell(
+                                        onTap: () =>
+                                            Navigator.of(context).pop(),
+                                        child:
+                                            const Icon(Icons.close, size: 24),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+
+                                  // สินค้า 2 คอลัมน์แนวตั้ง
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // คอลัมน์ซ้าย
+                                          Expanded(
+                                            child: Column(
+                                              children: List.generate(
+                                                productCategory.length,
+                                                (index) => index.isEven
+                                                    ? Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 6),
+                                                        child: Row(
+                                                          children: [
+                                                            CircleAvatar(
+                                                              radius: 28,
+                                                              backgroundColor:
+                                                                  Colors.white,
+                                                              child: ClipOval(
+                                                                child: productCategory[index].image !=
+                                                                            null &&
+                                                                        productCategory[index]
+                                                                            .image!
+                                                                            .isNotEmpty
+                                                                    ? Image
+                                                                        .network(
+                                                                        productCategory[index]
+                                                                            .image!,
+                                                                        width:
+                                                                            56,
+                                                                        height:
+                                                                            56,
+                                                                        fit: BoxFit
+                                                                            .fill,
+                                                                        errorBuilder: (context,
+                                                                            error,
+                                                                            stackTrace) {
+                                                                          return Image
+                                                                              .network(
+                                                                            'https://cdn-icons-png.flaticon.com/512/1046/1046857.png',
+                                                                            width:
+                                                                                56,
+                                                                            height:
+                                                                                56,
+                                                                            fit:
+                                                                                BoxFit.fill,
+                                                                          );
+                                                                        },
+                                                                      )
+                                                                    : Image
+                                                                        .network(
+                                                                        'https://cdn-icons-png.flaticon.com/512/1046/1046857.png',
+                                                                        width:
+                                                                            56,
+                                                                        height:
+                                                                            56,
+                                                                        fit: BoxFit
+                                                                            .fill,
+                                                                      ),
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 8),
+                                                            Expanded(
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    productCategory[index]
+                                                                            .name ??
+                                                                        '',
+                                                                    style:
+                                                                        const TextStyle(
+                                                                      fontSize:
+                                                                          14,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                    ),
+                                                                    maxLines: 2,
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          6),
+                                                                  Checkbox(
+                                                                    value: selectedIds
+                                                                        .contains(
+                                                                            productCategory[index].id),
+                                                                    onChanged:
+                                                                        (value) {
+                                                                      setState(
+                                                                          () {
+                                                                        if (value ==
+                                                                            true) {
+                                                                          selectedIds
+                                                                              .add(productCategory[index].id);
+                                                                        } else {
+                                                                          selectedIds
+                                                                              .remove(productCategory[index].id);
+                                                                        }
+                                                                      });
+                                                                    },
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    : const SizedBox.shrink(),
+                                              ),
+                                            ),
+                                          ),
+
+                                          const SizedBox(width: 16),
+
+                                          // คอลัมน์ขวา
+                                          Expanded(
+                                            child: Column(
+                                              children: List.generate(
+                                                productCategory.length,
+                                                (index) => index.isOdd
+                                                    ? Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 6),
+                                                        child: Row(
+                                                          children: [
+                                                            CircleAvatar(
+                                                              radius: 28,
+                                                              backgroundColor:
+                                                                  Colors.white,
+                                                              child: ClipOval(
+                                                                child: productCategory[index].image !=
+                                                                            null &&
+                                                                        productCategory[index]
+                                                                            .image!
+                                                                            .isNotEmpty
+                                                                    ? Image
+                                                                        .network(
+                                                                        productCategory[index]
+                                                                            .image!,
+                                                                        width:
+                                                                            56,
+                                                                        height:
+                                                                            56,
+                                                                        fit: BoxFit
+                                                                            .fill,
+                                                                        errorBuilder: (context,
+                                                                            error,
+                                                                            stackTrace) {
+                                                                          return Image
+                                                                              .network(
+                                                                            'https://cdn-icons-png.flaticon.com/512/1046/1046857.png',
+                                                                            width:
+                                                                                56,
+                                                                            height:
+                                                                                56,
+                                                                            fit:
+                                                                                BoxFit.fill,
+                                                                          );
+                                                                        },
+                                                                      )
+                                                                    : Image
+                                                                        .network(
+                                                                        'https://cdn-icons-png.flaticon.com/512/1046/1046857.png',
+                                                                        width:
+                                                                            56,
+                                                                        height:
+                                                                            56,
+                                                                        fit: BoxFit
+                                                                            .fill,
+                                                                      ),
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 8),
+                                                            Expanded(
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    productCategory[index]
+                                                                            .name ??
+                                                                        '',
+                                                                    style:
+                                                                        const TextStyle(
+                                                                      fontSize:
+                                                                          14,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                    ),
+                                                                    maxLines: 2,
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          6),
+                                                                  Checkbox(
+                                                                    value: selectedIds
+                                                                        .contains(
+                                                                            productCategory[index].id),
+                                                                    onChanged:
+                                                                        (value) {
+                                                                      setState(
+                                                                          () {
+                                                                        if (value ==
+                                                                            true) {
+                                                                          selectedIds
+                                                                              .add(productCategory[index].id);
+                                                                        } else {
+                                                                          selectedIds
+                                                                              .remove(productCategory[index].id);
+                                                                        }
+                                                                      });
+                                                                    },
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    : const SizedBox.shrink(),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 12),
+
+                                  // ปุ่มยืนยัน
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 48,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        // ดึงเฉพาะรายการที่ถูกเลือก
+                                        final selectedProducts = productCategory
+                                            .where((e) =>
+                                                selectedIds.contains(e.id))
+                                            .toList();
+                                        Navigator.of(context)
+                                            .pop(selectedProducts);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8)),
+                                        backgroundColor:
+                                            const Color(0xFF1D318C),
+                                      ),
+                                      child: const Text(
+                                        'ยืนยัน',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                      },
+                    );
+                    if (_selectProduct != null) {
+                      setState(() {
+                        selectedProducts = _selectProduct;
+                        quantities = {};
+                        // กำหนดจำนวนเริ่มต้นให้สินค้าที่ถูกเลือกไว้แล้ว
+                        for (var product in selectedProducts) {
+                          quantities[product.id] = 1;
+                        }
+                      });
+                      inspect(selectedProducts);
+                    }
+                  },
                   icon: Icon(Icons.add, color: Colors.white, size: 20),
                   padding: EdgeInsets.zero,
                   constraints: BoxConstraints(),
@@ -660,7 +1061,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                         padding: const EdgeInsets.only(right: 8),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.file(file, width: 100, height: 80, fit: BoxFit.cover),
+                          child: Image.file(file,
+                              width: 100, height: 80, fit: BoxFit.cover),
                         ),
                       ),
                       Positioned(
@@ -675,7 +1077,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                           child: CircleAvatar(
                             radius: 12,
                             backgroundColor: Colors.black54,
-                            child: Icon(Icons.close, size: 16, color: Colors.white),
+                            child: Icon(Icons.close,
+                                size: 16, color: Colors.white),
                           ),
                         ),
                       )
@@ -685,20 +1088,34 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               ),
             ),
           SizedBox(height: 16),
-          _productCard(
-            title: 'ถังน้ำแข็ง',
-            options: ['เล็ก', 'กลาง', 'ใหญ่'],
-            quantity: iceTankQty,
-            onAdd: () => setState(() => iceTankQty++),
-            onRemove: () => setState(() => iceTankQty = (iceTankQty > 0) ? iceTankQty - 1 : 0),
-          ),
-          Divider(),
-          _productCard(
-            title: 'น้ำแข็งก้อน',
-            options: [],
-            quantity: iceCubeQty,
-            onAdd: () => setState(() => iceCubeQty++),
-            onRemove: () => setState(() => iceCubeQty = (iceCubeQty > 0) ? iceCubeQty - 1 : 0),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: selectedProducts.length,
+            itemBuilder: (context, index) {
+              final product = selectedProducts[index];
+              final quantity = quantities[product.id] ?? 1;
+
+              return _productCard(
+                title: product.name ?? '',
+                options: (product.product_units ?? [])
+                    .where((u) => u.name != null)
+                    .map((u) => u.name!)
+                    .toList(),
+                quantity: quantities[product.id] ?? 1,
+                onAdd: () => setState(() {
+                  quantities[product.id] = (quantities[product.id] ?? 1) + 1;
+                }),
+                onRemove: () => setState(() {
+                  final qty = quantities[product.id] ?? 1;
+                  if (qty > 1) quantities[product.id] = qty - 1;
+                }),
+                onDelete: () => setState(() {
+                  selectedProducts.remove(product);
+                  quantities.remove(product.id);
+                }),
+              );
+            },
           ),
           SizedBox(height: 24),
           SizedBox(
@@ -711,12 +1128,17 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                   shopImages.clear();
                   if (shopImages.isNotEmpty) {
                     for (var i = 0; i < shopImages.length; i++) {
-                      final image = await UoloadService.addImage(file: File(shopImages[i].path), path: 'images/asset/');
+                      final image = await UoloadService.addImage(
+                          file: File(shopImages[i].path),
+                          path: 'images/asset/');
                       listImageAPI!.add(image);
                     }
                   }
 
-                  final Map<String, int> workDays = {for (var entry in daySelected.entries) thaiToKey[entry.key]!: entry.value ? 1 : 0};
+                  final Map<String, int> workDays = {
+                    for (var entry in daySelected.entries)
+                      thaiToKey[entry.key]!: entry.value ? 1 : 0
+                  };
                   Map<String, String> workTimes = {};
                   for (final day in thaiToKey.keys) {
                     final key = thaiToKey[day]!;
@@ -725,8 +1147,12 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                     final start = startControllers[day]?.text.trim() ?? '';
                     final end = endControllers[day]?.text.trim() ?? '';
 
-                    workTimes['${key}_start_time'] = isActive && start.isNotEmpty ? _formatToTime(start) : '';
-                    workTimes['${key}_end_time'] = isActive && end.isNotEmpty ? _formatToTime(end) : '';
+                    workTimes['${key}_start_time'] =
+                        isActive && start.isNotEmpty
+                            ? _formatToTime(start)
+                            : '';
+                    workTimes['${key}_end_time'] =
+                        isActive && end.isNotEmpty ? _formatToTime(end) : '';
                   }
                   inspect(workDays);
                   inspect(workTimes);
@@ -740,7 +1166,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                     lon: result!.longitude.toString(), // แทนที่ด้วยค่าจริง
                     card_fname: card_fname.text,
                     card_lname: card_lname.text,
-                    card_birth_date: convertDateFormat(card_birth_date.text), // แทนที่ด้วยค่าจริง
+                    card_birth_date: convertDateFormat(
+                        card_birth_date.text), // แทนที่ด้วยค่าจริง
                     card_address: card_address.text,
                     card_district: card_district.text,
                     card_sub_district: card_sub_district.text,
@@ -774,9 +1201,12 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
               ),
-              child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: Text('ถัดไป',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ),
         ],
@@ -812,50 +1242,94 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
     required int quantity,
     required VoidCallback onAdd,
     required VoidCallback onRemove,
+    VoidCallback? onDelete, // ถ้าอยากให้ลบได้
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-            Spacer(),
-            IconButton(onPressed: () {}, icon: Icon(Icons.delete, color: Colors.grey)),
-          ],
-        ),
-        if (options.isNotEmpty)
-          Row(
-            children: options.map((option) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade400),
-                    borderRadius: BorderRadius.circular(20),
+            // หัวข้อ + ลบ
+            Row(
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
-                  child: Text(option),
                 ),
-              );
-            }).toList(),
-          ),
-        SizedBox(height: 8),
-        Row(
-          children: [
-            Text('จำนวน'),
-            SizedBox(width: 8),
-            IconButton(
-              onPressed: onRemove,
-              icon: Icon(Icons.remove_circle_outline, color: Colors.indigo),
+                const Spacer(),
+                IconButton(
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete, color: Colors.grey),
+                ),
+              ],
             ),
-            Text('$quantity', style: TextStyle(fontWeight: FontWeight.bold)),
-            IconButton(
-              onPressed: onAdd,
-              icon: Icon(Icons.add_circle_outline, color: Colors.indigo),
+
+            // ถ้ามี options (เช่น product_units) ให้แสดง
+            if (options.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: options.map((option) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.grey.shade100,
+                      ),
+                      child: Text(
+                        option,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+
+            // แถวจำนวน
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    onPressed: onRemove,
+                    icon: const Icon(Icons.remove, color: Colors.black54),
+                  ),
+                  Text(
+                    '$quantity',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: onAdd,
+                    icon: const Icon(Icons.add, color: Colors.black54),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
@@ -891,7 +1365,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
     return Text(text, style: TextStyle(fontWeight: FontWeight.bold));
   }
 
-  Widget _textField(String hint, TextEditingController controller, {int maxLines = 1}) {
+  Widget _textField(String hint, TextEditingController controller,
+      {int maxLines = 1}) {
     return TextField(
       controller: controller,
       maxLines: maxLines,

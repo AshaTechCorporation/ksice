@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:ksice/model/productunits.dart';
 
 part 'productcategory.g.dart';
 
@@ -11,6 +12,7 @@ class ProductCategory {
   String? description;
   String? image;
   int? is_active;
+  List<ProductUnits>? product_units;
 
   ProductCategory(
     this.id,
@@ -20,6 +22,7 @@ class ProductCategory {
     this.description,
     this.image,
     this.is_active,
+    this.product_units,
   );
 
   factory ProductCategory.fromJson(Map<String, dynamic> json) =>
