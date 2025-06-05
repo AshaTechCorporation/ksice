@@ -2,6 +2,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:ksice/constants.dart';
 import 'package:ksice/employee/home/customerPage.dart';
+import 'package:ksice/widgets/checkin_success_dialog.dart';
+import 'package:ksice/widgets/loadingDialog.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class HomePage extends StatefulWidget {

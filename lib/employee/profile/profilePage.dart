@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:ksice/login/Service/loginService.dart';
+import 'package:ksice/model/user.dart';
 import 'package:ksice/widgets/checkin_success_dialog.dart';
+import 'package:ksice/widgets/loadingDialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,6 +17,50 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  User? user;
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences? pref;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await getProfile();
+    });
+  }
+
+  Future<void> getProfile() async {
+    try {
+      LoadingDialog.open(context);
+      pref = await SharedPreferences.getInstance();
+      final id = pref?.getInt('userID');
+      final _user = await LoginService.getProfile(id: id!);
+      LoadingDialog.close(context);
+
+      if (!mounted) return;
+      setState(() {
+        idController.text = _user.code.toString();
+        firstNameController.text = _user.name ?? '';
+        lastNameController.text = _user.name ?? '';
+        phoneController.text = _user.phone ?? '';
+      });
+    } on Exception catch (e) {
+      LoadingDialog.close(context);
+      if (!mounted) return;
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return ErrorDialog(
+            description: '${e}',
+            pressYes: () {
+              Navigator.pop(context);
+            },
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +96,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         onPressed: () async {
                           showDialog(
                             context: context,
-                            builder: (context) => CheckInSuccessDialog(timeText: '12:00 น.'),
+                            builder: (context) =>
+                                CheckInSuccessDialog(timeText: '12:00 น.'),
                           );
                         },
                         style: OutlinedButton.styleFrom(
