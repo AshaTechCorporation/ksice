@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
@@ -372,8 +373,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
             children: [
               _label('แผนที่ร้านค้า'),
               SizedBox(
-                width: 150,
-                height: 50,
+                width: 120,
+                height: 40,
                 child: OutlinedButton(
                   onPressed: () async {
                     result = await Navigator.push(
@@ -386,6 +387,7 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                     if (result != null) {
                       print('เลือกแล้ว: lat=${result!.latitude}, lng=${result!.longitude}');
                     }
+                    setState(() {});
                   },
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -397,6 +399,7 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               ),
             ],
           ),
+          result != null ? Text('ละติจูด = ${result!.latitude.toStringAsFixed(3)}, ลองติจูด = ${result!.longitude.toStringAsFixed(3)}') : SizedBox(),
 
           SizedBox(height: 16),
           //_textField('รายละเอียดที่ตั้งร้านค้า', maxLines: 2),
@@ -587,7 +590,10 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
             FormInputField(
               hint: 'เบอร์โทรศัพท์',
               controller: phoneController,
-              keyboardType: TextInputType.phone,
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(10),
+              ],
             ),
             SizedBox(height: 24),
             SizedBox(
@@ -643,12 +649,12 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                     activeColor: Colors.indigo,
                   ),
                   SizedBox(width: 8),
-                  _timePickerField(startControllers[day]!),
+                  _timePickerField(startControllers[day]!, enabled: daySelected[day] ?? false),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
                     child: Text('-', style: TextStyle(fontSize: 16, color: Colors.grey.shade700)),
                   ),
-                  _timePickerField(endControllers[day]!),
+                  _timePickerField(endControllers[day]!, enabled: daySelected[day] ?? false),
                 ],
               ),
             );
@@ -991,32 +997,32 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
             child: ElevatedButton(
               onPressed: () async {
                 try {
-                  LoadingDialog.open(context);
-                  shopImages.clear();
-                  List<Map<String, dynamic>> memberProductRequests = [];
+                  // LoadingDialog.open(context);
+                  // shopImages.clear();
+                  // List<Map<String, dynamic>> memberProductRequests = [];
 
-                  for (var product in selectedProducts) {
-                    // ถ้าไม่มี unit ให้ใช้ 1 แทน
-                    final unitId = product.product_units != null && product.product_units!.isNotEmpty ? product.product_units!.first.id : 1;
+                  // for (var product in selectedProducts) {
+                  //   // ถ้าไม่มี unit ให้ใช้ 1 แทน
+                  //   final unitId = product.product_units != null && product.product_units!.isNotEmpty ? product.product_units!.first.id : 1;
 
-                    final qty = quantities[product.id] ?? 1;
+                  //   final qty = quantities[product.id] ?? 1;
 
-                    if (qty > 0) {
-                      memberProductRequests.add({
-                        'product_id': product.id,
-                        'product_unit_id': unitId,
-                        'qty': qty,
-                      });
-                    }
-                  }
+                  //   if (qty > 0) {
+                  //     memberProductRequests.add({
+                  //       'product_id': product.id,
+                  //       'product_unit_id': unitId,
+                  //       'qty': qty,
+                  //     });
+                  //   }
+                  // }
 
-                  //inspect(memberProductRequests);
-                  if (shopImages.isNotEmpty) {
-                    for (var i = 0; i < shopImages.length; i++) {
-                      final image = await UoloadService.addImage(file: File(shopImages[i].path), path: 'images/asset/');
-                      listImageAPI!.add(image);
-                    }
-                  }
+                  // //inspect(memberProductRequests);
+                  // if (shopImages.isNotEmpty) {
+                  //   for (var i = 0; i < shopImages.length; i++) {
+                  //     final image = await UoloadService.addImage(file: File(shopImages[i].path), path: 'images/asset/');
+                  //     listImageAPI!.add(image);
+                  //   }
+                  // }
 
                   final Map<String, int> workDays = {for (var entry in daySelected.entries) thaiToKey[entry.key]!: entry.value ? 1 : 0};
                   Map<String, String> workTimes = {};
@@ -1032,34 +1038,34 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                   }
                   inspect(workDays);
                   inspect(workTimes);
-                  final addCustomer = await HomeService.customerCreate(
-                      name: nameShopController.text,
-                      detail: detailShopController.text,
-                      phone: phoneController.text,
-                      date_work: openDateController.text,
-                      time_time: openTimeController.text,
-                      lat: result!.latitude.toString(), // แทนที่ด้วยค่าจริง
-                      lon: result!.longitude.toString(), // แทนที่ด้วยค่าจริง
-                      card_fname: card_fname.text,
-                      card_lname: card_lname.text,
-                      card_birth_date: convertDateFormat(card_birth_date.text), // แทนที่ด้วยค่าจริง
-                      card_address: card_address.text,
-                      card_district: card_district.text,
-                      card_sub_district: card_sub_district.text,
-                      card_postal_code: card_postal_code.text,
-                      card_gender: card_gender.text,
-                      card_idcard: card_idcard.text, // แทนที่ด้วยค่าจริง
-                      card_image: imageAPI ?? '', // แทนที่ด้วยค่าจริง
-                      card_province: 'กรุงเทพมหานคร', // แทนที่ด้วยค่าจริง
-                      member_shop_images: listImageAPI ?? [],
-                      work_days: workDays,
-                      work_times: workTimes,
-                      member_product_requests: memberProductRequests);
-                  LoadingDialog.close(context);
-                  if (!mounted) return;
-                  if (addCustomer['status'] == true) {
-                    Navigator.pop(context);
-                  }
+                  // final addCustomer = await HomeService.customerCreate(
+                  //     name: nameShopController.text,
+                  //     detail: detailShopController.text,
+                  //     phone: phoneController.text,
+                  //     date_work: openDateController.text,
+                  //     time_time: openTimeController.text,
+                  //     lat: result!.latitude.toString(), // แทนที่ด้วยค่าจริง
+                  //     lon: result!.longitude.toString(), // แทนที่ด้วยค่าจริง
+                  //     card_fname: card_fname.text,
+                  //     card_lname: card_lname.text,
+                  //     card_birth_date: convertDateFormat(card_birth_date.text), // แทนที่ด้วยค่าจริง
+                  //     card_address: card_address.text,
+                  //     card_district: card_district.text,
+                  //     card_sub_district: card_sub_district.text,
+                  //     card_postal_code: card_postal_code.text,
+                  //     card_gender: card_gender.text,
+                  //     card_idcard: card_idcard.text, // แทนที่ด้วยค่าจริง
+                  //     card_image: imageAPI ?? '', // แทนที่ด้วยค่าจริง
+                  //     card_province: 'กรุงเทพมหานคร', // แทนที่ด้วยค่าจริง
+                  //     member_shop_images: listImageAPI ?? [],
+                  //     work_days: workDays,
+                  //     work_times: workTimes,
+                  //     member_product_requests: memberProductRequests);
+                  // LoadingDialog.close(context);
+                  // if (!mounted) return;
+                  // if (addCustomer['status'] == true) {
+                  //   Navigator.pop(context);
+                  // }
                 } on Exception catch (e) {
                   if (!mounted) return;
                   LoadingDialog.close(context);
@@ -1086,23 +1092,29 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
     );
   }
 
-  Widget _timePickerField(TextEditingController controller) {
-    return GestureDetector(
-      onTap: () => _selectTime(controller),
-      child: AbsorbPointer(
-        child: Container(
-          width: 80,
-          height: 36,
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(6),
-          ),
-          alignment: Alignment.centerLeft,
-          child: Text(
-            controller.text.isEmpty ? 'เลือกเวลา' : controller.text,
-            style: TextStyle(fontSize: 13, color: Colors.black),
-          ),
+  Widget _timePickerField(TextEditingController controller, {bool enabled = true}) {
+    return Expanded(
+      child: TextField(
+        controller: controller,
+        enabled: enabled,
+        readOnly: true,
+        onTap: enabled
+            ? () async {
+                final TimeOfDay? pickedTime = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                );
+                if (pickedTime != null) {
+                  final formatted = pickedTime.format(context);
+                  controller.text = formatted;
+                }
+              }
+            : null, // ปิด onTap ถ้า disabled
+        decoration: InputDecoration(
+          hintText: 'เลือกเวลา',
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+          border: const OutlineInputBorder(),
         ),
       ),
     );
