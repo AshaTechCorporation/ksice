@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:ksice/constants.dart';
 import 'package:ksice/employee/home/selectedMap.dart';
 import 'package:ksice/employee/home/services/homeService.dart';
 import 'package:ksice/employee/home/widgets/FormInputField.dart';
@@ -624,23 +625,32 @@ class _CustomerPageState extends State<CustomerPage>
             );
           }),
           SizedBox(height: 24),
-          Text('เพิ่มรายการสินค้า',
-              style: TextStyle(fontWeight: FontWeight.bold)),
-          SizedBox(height: 12),
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              onPressed: _pickImage,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                side: BorderSide(color: Colors.indigo),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6)),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'เพิ่มรายการสินค้า',
+                style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black54,
+                  fontSize: 14,
+                ),
               ),
-              child: Icon(Icons.add, color: Colors.indigo),
-            ),
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: buttonColor, // พื้นหลังน้ำเงิน
+                  borderRadius: BorderRadius.circular(8), // มุมโค้ง
+                ),
+                child: IconButton(
+                  onPressed: _pickImage,
+                  icon: Icon(Icons.add, color: Colors.white, size: 20),
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 16),
           if (selectedImages.isNotEmpty)
