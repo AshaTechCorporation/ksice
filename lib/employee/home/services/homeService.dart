@@ -33,6 +33,7 @@ class HomeService {
     required List<String> member_shop_images,
     required Map<String, dynamic> work_days,
     required Map<String, dynamic> work_times,
+    required List<Map<String, dynamic>> member_product_requests,
   }) async {
     final url = Uri.https(publicUrl, '/public/api/member_app');
     var headers = {
@@ -63,9 +64,7 @@ class HomeService {
           "card_postal_code": card_postal_code,
           "work_days": work_days,
           "work_times": work_times,
-          "member_product_requests": [
-            {"product_id": 1, "product_unit_id": 1, "qty": 10}
-          ],
+          "member_product_requests": member_product_requests,
           "member_bucket_requests": [
             {"ice_bucket_id": 1, "qty": 10}
           ]
@@ -117,7 +116,7 @@ class HomeService {
     final headers = {'Authorization': 'Bearer $token'};
     final response = await http.get(url, headers: headers).timeout(const Duration(minutes: 1));
 
-      if (response.statusCode == 200) {
+    if (response.statusCode == 200) {
       final data = convert.jsonDecode(response.body);
       final list = data["data"] as List;
       return list.map((e) => ProductCategory.fromJson(e)).toList();
@@ -126,6 +125,7 @@ class HomeService {
       throw ApiException(data['message']);
     }
   }
+
   static Future<List<DriverCar>> getListDriver({
     String? search,
     String? status,
