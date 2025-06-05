@@ -18,6 +18,7 @@ class ListCarPage extends StatefulWidget {
 class _ListCarPageState extends State<ListCarPage> {
   late GoogleMapController mapController;
   LatLng? selectedPosition; // เริ่มที่กรุงเทพ
+  BitmapDescriptor? customIcon;
 
   List<DriverCar> driver = [];
 
@@ -26,8 +27,18 @@ class _ListCarPageState extends State<ListCarPage> {
     super.initState();
     getLocation();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _loadCustomIcon();
       await getDeiver();
     });
+  }
+
+  Future<void> _loadCustomIcon() async {
+    customIcon = await BitmapDescriptor.asset(
+      ImageConfiguration(),
+      width: 40,
+      height: 50,
+      'assets/icons/caeKSI2.png',
+    );
   }
 
   getDeiver() async {
@@ -138,7 +149,7 @@ class _ListCarPageState extends State<ListCarPage> {
         markerId: MarkerId(item.id.toString()),
         position: LatLng(double.parse(item.latest_checkin?.latitude ?? '0.0'), double.parse(item.latest_checkin?.longitude ?? '0.0')),
         // infoWindow: InfoWindow(title: item['title']),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        icon: customIcon ?? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         onTap: () async {
           // double distanceInMeters = Geolocator.distanceBetween(
           //   lat!,
@@ -191,10 +202,8 @@ class _ListCarPageState extends State<ListCarPage> {
       body: selectedPosition == null
           ? SizedBox(
               width: MediaQuery.of(context).size.width,
-              height: size.height * 0.721,
-              child: Center(
-                child: Text('กรุณาเปิดตำแหน่ง'),
-              ),
+              height: size.height * 0.75,
+              child: Center(child: CircularProgressIndicator()),
             )
           : Stack(
               children: [
@@ -296,7 +305,7 @@ class _ListCarPageState extends State<ListCarPage> {
                                         _moveToLocation(LatLng(double.parse(driver[index].latest_checkin!.latitude!), double.parse(driver[index].latest_checkin!.longitude!)));
                                         selectedPosition = LatLng(double.parse(driver[index].latest_checkin!.latitude!), double.parse(driver[index].latest_checkin!.longitude!));
                                       });
-                                      _showBottomSheet(driver[index]);
+                                      // _showBottomSheet(driver[index]);
                                     }
                                   },
                                   child: Column(
@@ -305,8 +314,11 @@ class _ListCarPageState extends State<ListCarPage> {
                                         children: [
                                           CircleAvatar(
                                             radius: 17,
-                                            backgroundImage: NetworkImage(
-                                                'https://c7.alamy.com/comp/R4T599/box-delivery-truck-icon-isometric-of-box-delivery-truck-vector-icon-for-on-transparent-background-R4T599.jpg'),
+                                            // backgroundImage: NetworkImage(
+                                            //     'https://c7.alamy.com/comp/R4T599/box-delivery-truck-icon-isometric-of-box-delivery-truck-vector-icon-for-on-transparent-background-R4T599.jpg'),
+                                            backgroundImage: AssetImage(
+                                              'assets/icons/carKSI.png',
+                                            ),
                                           ),
                                           SizedBox(
                                             width: 10,
