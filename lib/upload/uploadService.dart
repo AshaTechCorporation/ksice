@@ -1,29 +1,34 @@
 import 'dart:io';
 
-
 import 'package:dio/dio.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:ksice/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UoloadService {
-  static uploadImage(XFile file) async {
+  static Future ocrIdCard({File? file}) async {
+    const apiUrl = 'https://api.iapp.co.th/thai-national-id-card/v3.5/front';
+
+    final headers = {
+      'apikey': 'xBYlCRa5jFf4y3dmULapxZLlksVW5ydg',
+      // 'Content-Type': 'application/json',
+    };
     var formData = FormData.fromMap(
-      {'image': await MultipartFile.fromFile(file.path, filename: file.name), 'path': 'images/asset/'},
+      {
+        'file': await MultipartFile.fromFile(file!.path),
+      },
     );
+    final response = await Dio().post(apiUrl, data: formData, options: Options(headers: headers));
 
-    final res = await Dio()
-        .post('https://cargo-api.dev-asha9.com/api/upload_images', data: formData, options: Options(headers: {'Content-Type': 'multipart/form-data; boundary=<calculated when request is sent>'}));
-
-    if (res.statusCode == 200 || res.statusCode == 201) {
-      return res.data['data'];
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final data = response.data;
+      return data;
     } else {
       throw Exception('อัพโหดลไฟล์ล้มเหลว');
     }
   }
 
   static Future addImage({File? file, required String path}) async {
-    const apiUrl = '$baseUrl/api/upload_images';
+    const apiUrl = '$baseUrl/public/api/upload_images';
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
     final headers = {
@@ -47,7 +52,7 @@ class UoloadService {
   }
 
   static Future addFile({File? file, required String path}) async {
-    const apiUrl = '$baseUrl/api/upload_file';
+    const apiUrl = '$baseUrl/public/api/upload_file';
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
     final headers = {

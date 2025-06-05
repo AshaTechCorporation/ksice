@@ -76,6 +76,7 @@ class _FristPageState extends State<FristPage> {
       bottomNavigationBar: Container(
         margin: const EdgeInsets.all(16),
         height: 80,
+        // padding: EdgeInsets.only(top: 15),
         decoration: BoxDecoration(
           color: buttonColor,
           borderRadius: BorderRadius.circular(30),
@@ -87,56 +88,53 @@ class _FristPageState extends State<FristPage> {
             ),
           ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: BottomNavigationBar(
-            currentIndex: selectedIndex,
-            onTap: (index) {
-              setState(() => selectedIndex = index);
-              onItemTapped(index);
-            },
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            type: BottomNavigationBarType.fixed,
-            selectedFontSize: 0, // ซ่อนไม่ใช้ label ของระบบ
-            unselectedFontSize: 0,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            items: [
-              BottomNavigationBarItem(
-                icon: _buildNavItem(
-                  index: 0,
-                  image: 'assets/icons/home_icon.png',
-                  label: 'หน้าหลัก',
-                ),
-                label: '',
+        child: BottomNavigationBar(
+          currentIndex: selectedIndex,
+          onTap: (index) {
+            setState(() => selectedIndex = index);
+            onItemTapped(index);
+          },
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          type: BottomNavigationBarType.fixed,
+          selectedFontSize: 0, // ซ่อนไม่ใช้ label ของระบบ
+          unselectedFontSize: 0,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          items: [
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                index: 0,
+                image: 'assets/icons/home_icon.png',
+                label: 'หน้าหลัก',
               ),
-              BottomNavigationBarItem(
-                icon: _buildNavItem(
-                  index: 1,
-                  image: 'assets/icons/map_icon.png',
-                  label: 'MAP',
-                ),
-                label: '',
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                index: 1,
+                image: 'assets/icons/map_icon.png',
+                label: 'MAP',
               ),
-              BottomNavigationBarItem(
-                icon: _buildNavItem(
-                  index: 2,
-                  image: 'assets/icons/hitory_icon.png',
-                  label: 'ประวัติการส่ง',
-                ),
-                label: '',
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                index: 2,
+                image: 'assets/icons/hitory_icon.png',
+                label: 'ประวัติการส่ง',
               ),
-              BottomNavigationBarItem(
-                icon: _buildNavItem(
-                  index: 3,
-                  image: 'assets/icons/profile_icon.png',
-                  label: 'โปรไฟล์',
-                ),
-                label: '',
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                index: 3,
+                image: 'assets/icons/profile_icon.png',
+                label: 'โปรไฟล์',
               ),
-            ],
-          ),
+              label: '',
+            ),
+          ],
         ),
       ),
     );

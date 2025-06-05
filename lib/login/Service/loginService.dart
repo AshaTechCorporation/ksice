@@ -2,6 +2,7 @@ import 'package:ksice/constants.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 import 'package:ksice/model/user.dart';
+import 'package:ksice/utils/ApiExeption.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginService {
@@ -19,7 +20,7 @@ class LoginService {
       return dataOut;
     } else {
       final data = convert.jsonDecode(response.body);
-      throw Exception(data['message']);
+      throw ApiException(data['message']);
     }
   }
 
@@ -35,8 +36,7 @@ class LoginService {
       return User.fromJson(data['data']);
     } else {
       final data = convert.jsonDecode(response.body);
-      throw Exception(data['message']);
-      // throw ApiException(data['message']);
+      throw ApiException(data['message']);
     }
   }
 }

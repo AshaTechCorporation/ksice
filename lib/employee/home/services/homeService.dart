@@ -1,6 +1,9 @@
 import 'dart:convert' as convert;
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:ksice/constants.dart';
+import 'package:ksice/utils/ApiExeption.dart';
 
 class HomeService {
   const HomeService();
@@ -69,7 +72,7 @@ class HomeService {
       return data;
     } else {
       final data = convert.jsonDecode(response.body);
-      throw Exception(data['message']);
+      throw ApiException(data['message']);
     }
   }
 }

@@ -58,8 +58,8 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text('ร้านอาหารเพลินใจ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                                          Text('0909909900', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
+                                          Text(widget.item.member_branch?.name ?? ' - ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                                          Text(widget.item.member_branch?.contact_phone ?? ' - ', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
                                         ],
                                       ),
                                       SizedBox(height: 4),
@@ -78,7 +78,9 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
                             SizedBox(height: 10),
                             Text('ที่อยู่', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                             SizedBox(height: 10),
-                            Text('ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่ ที่อยู่', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                            Text(
+                                '${widget.item.member_branch?.address ?? ' - '} ${widget.item.member_branch?.sub_district ?? ' - '}  ${widget.item.member_branch?.district ?? ' - '}  ${widget.item.member_branch?.province ?? ' - '}',
+                                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
                             SizedBox(height: 10),
                             Text('วันเวลาที่ต้องส่ง', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                             SizedBox(height: 10),
