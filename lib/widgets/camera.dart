@@ -101,8 +101,46 @@ class _IDCardCameraPageState extends State<IDCardCameraPage> {
       body: _croppedImage != null
           ? _buildPreview()
           : (_controller == null || !_controller!.value.isInitialized)
-              ? Center(child: CircularProgressIndicator(color: Colors.white))
+              ? _buildCameraError()
               : _buildCamera(),
+    );
+  }
+
+  Widget _buildCameraError() {
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: Colors.black.withOpacity(0.5),
+        ),
+        Center(child: CircularProgressIndicator(color: Colors.white)),
+        Positioned(
+          top: 50,
+          left: 10,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              height: MediaQuery.of(context).size.width * 0.15,
+              width: MediaQuery.of(context).size.width * 0.15,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.arrow_back_ios_new,
+                  // color: brown,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
