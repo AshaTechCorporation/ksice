@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:ksice/constants.dart';
+import 'package:ksice/employee/home/ListCar/listCarPage.dart';
 import 'package:ksice/employee/home/customerPage.dart';
 import 'package:ksice/widgets/checkin_success_dialog.dart';
 import 'package:ksice/widgets/loadingDialog.dart';
@@ -71,8 +72,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('สถานะโดยรวมวันนี้',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const Text('สถานะโดยรวมวันนี้', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   const SizedBox(height: 16),
                   _buildGaugeWithLabels(),
                 ],
@@ -116,7 +116,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ),
                   Column(
                     children: [
-                      SizedBox(height: 30,),
+                      SizedBox(
+                        height: 30,
+                      ),
                       Text('ยังไม่มีข้อมูล'),
                     ],
                   ),
@@ -126,6 +128,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: buttonColor,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(width: 3, color: buttonColor),
+          borderRadius: BorderRadius.circular(100),
+        ),
+        onPressed: () async {
+          final out = await Navigator.push(context, MaterialPageRoute(builder: (context) {
+            // return CreateItemPage();
+            return ListCarPage();
+          }));
+        },
+        tooltip: 'เพิ่มรายการ',
+        child: const Icon(
+          Icons.directions_bus_outlined,
+          color: Colors.white,
+        ),
+      ), //
     );
   }
 
@@ -161,105 +181,103 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildGaugeWithLabels() {
-  return SizedBox(
-    width: 360,
-    height: 200,
-    child: Stack(
-      alignment: Alignment.center,
-      children: [
-        SfRadialGauge(
-          axes: <RadialAxis>[
-            RadialAxis(
-              minimum: 0,
-              maximum: 100,
-              startAngle: 180,
-              endAngle: 360,
-              showLabels: false,
-              showTicks: false,
-              radiusFactor: 0.85,
-              axisLineStyle: const AxisLineStyle(
-                thickness: 0.15,
-                thicknessUnit: GaugeSizeUnit.factor,
+    return SizedBox(
+      width: 360,
+      height: 200,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SfRadialGauge(
+            axes: <RadialAxis>[
+              RadialAxis(
+                minimum: 0,
+                maximum: 100,
+                startAngle: 180,
+                endAngle: 360,
+                showLabels: false,
+                showTicks: false,
+                radiusFactor: 0.85,
+                axisLineStyle: const AxisLineStyle(
+                  thickness: 0.15,
+                  thicknessUnit: GaugeSizeUnit.factor,
+                ),
+                ranges: [
+                  _gaugeRange(0, 20, Colors.green),
+                  _gaugeRange(20, 40, Colors.lightGreen),
+                  _gaugeRange(40, 60, Colors.yellow),
+                  _gaugeRange(60, 80, Colors.orange),
+                  _gaugeRange(80, 100, Colors.red),
+                ],
+                pointers: <GaugePointer>[
+                  NeedlePointer(
+                    value: progressValue,
+                    enableAnimation: true,
+                    animationDuration: 800,
+                    needleLength: 0.7,
+                    lengthUnit: GaugeSizeUnit.factor,
+                    needleStartWidth: 2, // ✅ ปรับให้หนาขึ้น
+                    needleEndWidth: 4,
+                    needleColor: Colors.black,
+                    knobStyle: const KnobStyle(
+                      color: Colors.black,
+                      borderColor: Colors.black,
+                      borderWidth: 1.5,
+                      sizeUnit: GaugeSizeUnit.logicalPixel,
+                    ),
+                  ),
+                ],
+                annotations: <GaugeAnnotation>[
+                  GaugeAnnotation(
+                    angle: 90,
+                    positionFactor: 0.3,
+                    widget: Text(
+                      '${progressValue.toInt()}%',
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
               ),
-              ranges: [
-                _gaugeRange(0, 20, Colors.green),
-                _gaugeRange(20, 40, Colors.lightGreen),
-                _gaugeRange(40, 60, Colors.yellow),
-                _gaugeRange(60, 80, Colors.orange),
-                _gaugeRange(80, 100, Colors.red),
-              ],
-              pointers: <GaugePointer>[
-                NeedlePointer(
-                  value: progressValue,
-                  enableAnimation: true,
-                  animationDuration: 800,
-                  needleLength: 0.7,
-                  lengthUnit: GaugeSizeUnit.factor,
-                  needleStartWidth: 2, // ✅ ปรับให้หนาขึ้น
-                  needleEndWidth: 4,
-                  needleColor: Colors.black,
-                  knobStyle: const KnobStyle(
-                    color: Colors.black,
-                    borderColor: Colors.black,
-                    borderWidth: 1.5,
-                    sizeUnit: GaugeSizeUnit.logicalPixel,
-                  ),
-                ),
-              ],
-              annotations: <GaugeAnnotation>[
-                GaugeAnnotation(
-                  angle: 90,
-                  positionFactor: 0.3,
-                  widget: Text(
-                    '${progressValue.toInt()}%',
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        ..._buildOverlayLabels(), // ✅ ตัวเลขบนเส้น
-      ],
-    ),
-  );
-}
-
-// 🔧 เพิ่มแยก Range สีพร้อม border
-GaugeRange _gaugeRange(double start, double end, Color color) {
-  return GaugeRange(
-    startValue: start,
-    endValue: end,
-    color: color,
-    sizeUnit: GaugeSizeUnit.factor,
-    startWidth: 0.45,
-    endWidth: 0.45,
-  );
-}
-
-List<Widget> _buildOverlayLabels() {
-  List<int> values = [0, 20, 40, 60, 80, 100];
-  double radius = 95; // ✅ ขยับให้อยู่บนโค้ง
-  double centerX = 180;
-  double centerY = 100;
-
-  return values.map((v) {
-    double angle = 180 - (v / 100 * 180);
-    double x = radius * cos(angle * pi / 180);
-    double y = radius * sin(angle * pi / 180);
-
-    return Positioned(
-      left: centerX + x - 10,
-      top: centerY - y - 9,
-      child: Text(
-        '$v',
-        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            ],
+          ),
+          ..._buildOverlayLabels(), // ✅ ตัวเลขบนเส้น
+        ],
       ),
     );
-  }).toList();
-}
+  }
 
+// 🔧 เพิ่มแยก Range สีพร้อม border
+  GaugeRange _gaugeRange(double start, double end, Color color) {
+    return GaugeRange(
+      startValue: start,
+      endValue: end,
+      color: color,
+      sizeUnit: GaugeSizeUnit.factor,
+      startWidth: 0.45,
+      endWidth: 0.45,
+    );
+  }
+
+  List<Widget> _buildOverlayLabels() {
+    List<int> values = [0, 20, 40, 60, 80, 100];
+    double radius = 95; // ✅ ขยับให้อยู่บนโค้ง
+    double centerX = 180;
+    double centerY = 100;
+
+    return values.map((v) {
+      double angle = 180 - (v / 100 * 180);
+      double x = radius * cos(angle * pi / 180);
+      double y = radius * sin(angle * pi / 180);
+
+      return Positioned(
+        left: centerX + x - 10,
+        top: centerY - y - 9,
+        child: Text(
+          '$v',
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+        ),
+      );
+    }).toList();
+  }
 
   Widget _buildShopItem(String name, String address, String phone) {
     return Container(

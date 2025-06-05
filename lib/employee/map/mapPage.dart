@@ -303,6 +303,7 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Map'),
       ),
