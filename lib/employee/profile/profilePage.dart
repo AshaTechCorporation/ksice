@@ -39,6 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
       if (!mounted) return;
       setState(() {
+        user = _user;
         idController.text = _user.code.toString();
         firstNameController.text = _user.name ?? '';
         lastNameController.text = _user.name ?? '';
@@ -127,12 +128,27 @@ class _ProfilePageState extends State<ProfilePage> {
               radius: 50,
               backgroundColor: Colors.white,
               child: ClipOval(
-                child: Image.network(
-                  'https://cdn-icons-png.flaticon.com/512/2922/2922506.png',
-                  width: 90,
-                  height: 90,
-                  fit: BoxFit.cover,
-                ),
+                child: user?.image != null && user!.image!.isNotEmpty
+                    ? Image.network(
+                        user!.image!,
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.network(
+                            'https://cdn-icons-png.flaticon.com/512/2922/2922506.png',
+                            width: 90,
+                            height: 90,
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      )
+                    : Image.network(
+                        'https://cdn-icons-png.flaticon.com/512/2922/2922506.png',
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                      ), // fallback หากไม่มีรูป
               ),
             ),
           ),
