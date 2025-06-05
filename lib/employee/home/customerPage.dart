@@ -413,13 +413,18 @@ class _CustomerPageState extends State<CustomerPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!scanned) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                'assets/images/Idcard.png',
-                width: double.infinity,
-                height: 220,
-                fit: BoxFit.cover,
+            Transform.rotate(
+              angle: -90 * 3.1415926535 / 180, // หมุน 90 องศาทวนเข็มนาฬิกา
+              child: AspectRatio(
+                aspectRatio: 3 / 4,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    'assets/images/Idcard.png',
+                    width: double.infinity,
+                    fit: BoxFit.contain,
+                  ),
+                ),
               ),
             ),
             SizedBox(height: 12),
@@ -523,7 +528,7 @@ class _CustomerPageState extends State<CustomerPage>
                   ),
                 ),
                 child: Text(
-                  'สแกนเอกสาร',
+                  'สแกนบัตรประชาชน',
                   style: TextStyle(
                       color: Colors.white, fontWeight: FontWeight.bold),
                 ),
