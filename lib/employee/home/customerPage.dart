@@ -22,7 +22,8 @@ class CustomerPage extends StatefulWidget {
   State<CustomerPage> createState() => _CustomerPageState();
 }
 
-class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMixin {
+class _CustomerPageState extends State<CustomerPage>
+    with TickerProviderStateMixin {
   late TabController _tabController;
   final Map<String, bool> daySelected = {
     'วันจันทร์': true,
@@ -56,21 +57,30 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
 
   bool scanned = false;
 
-  TextEditingController firstNameController = TextEditingController();
-  TextEditingController lastNameController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
+  TextEditingController card_fname = TextEditingController();
+  TextEditingController card_lname = TextEditingController();
+  TextEditingController card_birth_date = TextEditingController();
+  TextEditingController card_address = TextEditingController();
+  TextEditingController card_district = TextEditingController();
+  TextEditingController card_sub_district = TextEditingController();
+  TextEditingController card_postal_code = TextEditingController();
+  TextEditingController card_gender = TextEditingController();
+  TextEditingController card_idcard = TextEditingController();
+  TextEditingController card_province = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
   final Map<String, TextEditingController> startControllers = {};
   final Map<String, TextEditingController> endControllers = {};
 
   String? imageAPI;
+  List<String>? listImageAPI;
 
   String _twoDigits(int n) => n.toString().padLeft(2, '0');
 
   String _formatToTime(String input) {
     // แยกชั่วโมงและนาทีจากรูปแบบ 12 ชั่วโมง เช่น "1:41 AM"
-    final match = RegExp(r'^(\d{1,2}):(\d{2})\s?(AM|PM)$', caseSensitive: false).firstMatch(input.replaceAll(RegExp(r'[\u202F\u00A0\s]+'), ' ').trim());
+    final match = RegExp(r'^(\d{1,2}):(\d{2})\s?(AM|PM)$', caseSensitive: false)
+        .firstMatch(input.replaceAll(RegExp(r'[\u202F\u00A0\s]+'), ' ').trim());
 
     if (match == null) {
       throw FormatException('Invalid time format: $input');
@@ -258,9 +268,13 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
           SizedBox(height: 8),
           Row(
             children: [
-              Expanded(child: _imageButton('เพิ่มรูปภาพ', Icons.add_a_photo, fromCamera: false)),
+              Expanded(
+                  child: _imageButton('เพิ่มรูปภาพ', Icons.add_a_photo,
+                      fromCamera: false)),
               SizedBox(width: 8),
-              Expanded(child: _imageButton('ถ่ายภาพ', Icons.camera_alt_outlined, fromCamera: true)),
+              Expanded(
+                  child: _imageButton('ถ่ายภาพ', Icons.camera_alt_outlined,
+                      fromCamera: true)),
             ],
           ),
           SizedBox(height: 12),
@@ -279,18 +293,21 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                         padding: EdgeInsets.only(right: 8),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.file(file, width: 64, height: 64, fit: BoxFit.cover),
+                          child: Image.file(file,
+                              width: 64, height: 64, fit: BoxFit.cover),
                         ),
                       ),
                       Positioned(
                         top: 0,
                         right: 0,
                         child: GestureDetector(
-                          onTap: () => setState(() => shopImages.removeAt(index)),
+                          onTap: () =>
+                              setState(() => shopImages.removeAt(index)),
                           child: CircleAvatar(
                             radius: 10,
                             backgroundColor: Colors.black54,
-                            child: Icon(Icons.close, size: 14, color: Colors.white),
+                            child: Icon(Icons.close,
+                                size: 14, color: Colors.white),
                           ),
                         ),
                       ),
@@ -318,12 +335,14 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                     );
 
                     if (result != null) {
-                      print('เลือกแล้ว: lat=${result!.latitude}, lng=${result!.longitude}');
+                      print(
+                          'เลือกแล้ว: lat=${result!.latitude}, lng=${result!.longitude}');
                     }
                   },
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6), // ✅ ลดความมนจาก 12 → 6 หรือ 4
+                      borderRadius: BorderRadius.circular(
+                          6), // ✅ ลดความมนจาก 12 → 6 หรือ 4
                     ),
                   ),
                   child: const Text('เลือกแผนที่'),
@@ -346,7 +365,9 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               onPressed: () async {
                 goToStep(1);
               },
-              child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: Text('ถัดไป',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           )
         ],
@@ -412,20 +433,31 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               height: 48,
               child: ElevatedButton(
                 onPressed: () async {
-                  final out = await Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  final out = await Navigator.push(context,
+                      MaterialPageRoute(builder: (context) {
                     return IDCardCameraPage();
                   }));
                   if (out != null) {
                     try {
                       LoadingDialog.open(context);
-                      final ocr = await UoloadService.ocrIdCard(file: File(out.path));
-                      final image = await UoloadService.addImage(file: File(out.path), path: 'images/asset/');
+                      final ocr =
+                          await UoloadService.ocrIdCard(file: File(out.path));
+                      final image = await UoloadService.addImage(
+                          file: File(out.path), path: 'images/asset/');
 
                       setState(() {
                         imageAPI = image;
-                        firstNameController.text = ocr['th_fname'];
-                        lastNameController.text = ocr['th_lname'];
-                        addressController.text = '${ocr['home_address']} ${ocr['sub_district']} ${ocr['district']} ${ocr['province']}';
+                        card_fname.text = ocr['th_fname'];
+                        card_lname.text = ocr['th_lname'];
+                        card_address.text =
+                            '${ocr['home_address']} ${ocr['sub_district']} ${ocr['district']} ${ocr['province']}';
+                        card_birth_date.text = ocr['birth_date'];
+                        card_district.text = ocr['district'];
+                        card_sub_district.text = ocr['sub_district'];
+                        card_postal_code.text = ocr['postal_code'];
+                        card_gender.text = '';
+                        card_idcard.text = ocr['id_card'];
+                        card_province.text = ocr['province'];
                         scanned = true;
                       });
                       LoadingDialog.close(context);
@@ -491,20 +523,25 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                 ),
                 child: Text(
                   'สแกนเอกสาร',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
           ] else ...[
             Row(
               children: [
-                Expanded(child: FormInputField(hint: 'ชื่อ', controller: firstNameController)),
+                Expanded(
+                    child:
+                        FormInputField(hint: 'ชื่อ', controller: card_fname)),
                 SizedBox(width: 8),
-                Expanded(child: FormInputField(hint: 'นามสกุล', controller: lastNameController)),
+                Expanded(
+                    child: FormInputField(
+                        hint: 'นามสกุล', controller: card_lname)),
               ],
             ),
             SizedBox(height: 16),
-            FormInputField(hint: 'ที่อยู่', controller: addressController),
+            FormInputField(hint: 'ที่อยู่', controller: card_address),
             SizedBox(height: 16),
             FormInputField(
               hint: 'เบอร์โทรศัพท์',
@@ -518,7 +555,7 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               child: ElevatedButton(
                 onPressed: () {
                   // ทำอะไรเมื่อกด "ถัดไป"
-                  print('ชื่อ: ${firstNameController.text}');
+                  print('ชื่อ: ${card_fname.text}');
                   goToStep(2);
                 },
                 style: ElevatedButton.styleFrom(
@@ -527,7 +564,9 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Text('ถัดไป',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
           ]
@@ -544,7 +583,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('เลือกวันเวลาที่ต้องการส่ง', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('เลือกวันเวลาที่ต้องการส่ง',
+              style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 12),
           ...days.map((day) {
             startControllers.putIfAbsent(day, () => TextEditingController());
@@ -568,7 +608,9 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                   _timePickerField(startControllers[day]!),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
-                    child: Text('-', style: TextStyle(fontSize: 16, color: Colors.grey.shade700)),
+                    child: Text('-',
+                        style: TextStyle(
+                            fontSize: 16, color: Colors.grey.shade700)),
                   ),
                   _timePickerField(endControllers[day]!),
                 ],
@@ -576,7 +618,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
             );
           }),
           SizedBox(height: 24),
-          Text('เพิ่มรายการสินค้า', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('เพิ่มรายการสินค้า',
+              style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 12),
           Align(
             alignment: Alignment.centerRight,
@@ -585,8 +628,10 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 side: BorderSide(color: Colors.indigo),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               ),
               child: Icon(Icons.add, color: Colors.indigo),
             ),
@@ -605,7 +650,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                         padding: const EdgeInsets.only(right: 8),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.file(file, width: 100, height: 80, fit: BoxFit.cover),
+                          child: Image.file(file,
+                              width: 100, height: 80, fit: BoxFit.cover),
                         ),
                       ),
                       Positioned(
@@ -620,7 +666,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                           child: CircleAvatar(
                             radius: 12,
                             backgroundColor: Colors.black54,
-                            child: Icon(Icons.close, size: 16, color: Colors.white),
+                            child: Icon(Icons.close,
+                                size: 16, color: Colors.white),
                           ),
                         ),
                       )
@@ -635,7 +682,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
             options: ['เล็ก', 'กลาง', 'ใหญ่'],
             quantity: iceTankQty,
             onAdd: () => setState(() => iceTankQty++),
-            onRemove: () => setState(() => iceTankQty = (iceTankQty > 0) ? iceTankQty - 1 : 0),
+            onRemove: () => setState(
+                () => iceTankQty = (iceTankQty > 0) ? iceTankQty - 1 : 0),
           ),
           Divider(),
           _productCard(
@@ -643,7 +691,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
             options: [],
             quantity: iceCubeQty,
             onAdd: () => setState(() => iceCubeQty++),
-            onRemove: () => setState(() => iceCubeQty = (iceCubeQty > 0) ? iceCubeQty - 1 : 0),
+            onRemove: () => setState(
+                () => iceCubeQty = (iceCubeQty > 0) ? iceCubeQty - 1 : 0),
           ),
           SizedBox(height: 24),
           SizedBox(
@@ -651,52 +700,89 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
             height: 48,
             child: ElevatedButton(
               onPressed: () async {
-                final Map<String, int> workDays = {for (var entry in daySelected.entries) thaiToKey[entry.key]!: entry.value ? 1 : 0};
-                Map<String, String> workTimes = {};
-                for (final day in thaiToKey.keys) {
-                  final key = thaiToKey[day]!;
-                  final isActive = daySelected[day] ?? false;
+                try {
+                  LoadingDialog.open(context);
+                  selectedImages.clear();
+                  if (selectedImages.isNotEmpty) {
+                    for (var i = 0; i < selectedImages.length; i++) {
+                      final image = await UoloadService.addImage(
+                          file: File(selectedImages[i].path),
+                          path: 'images/asset/');
+                      selectedImages.add(image);
+                    }
+                  }
 
-                  final start = startControllers[day]?.text.trim() ?? '';
-                  final end = endControllers[day]?.text.trim() ?? '';
+                  final Map<String, int> workDays = {
+                    for (var entry in daySelected.entries)
+                      thaiToKey[entry.key]!: entry.value ? 1 : 0
+                  };
+                  Map<String, String> workTimes = {};
+                  for (final day in thaiToKey.keys) {
+                    final key = thaiToKey[day]!;
+                    final isActive = daySelected[day] ?? false;
 
-                  workTimes['${key}_start_time'] = isActive && start.isNotEmpty ? _formatToTime(start) : '';
-                  workTimes['${key}_end_time'] = isActive && end.isNotEmpty ? _formatToTime(end) : '';
-                }
-                inspect(workDays);
-                inspect(workTimes);
-                final addCustomer = await HomeService.customerCreate(
-                  name: nameShopController.text,
-                  detail: detailShopController.text,
-                  phone: phoneController.text,
-                  date_work: openDateController.text,
-                  time_time: openTimeController.text,
-                  lat: result!.latitude.toString(), // แทนที่ด้วยค่าจริง
-                  lon: result!.longitude.toString(), // แทนที่ด้วยค่าจริง
-                  card_fname: firstNameController.text,
-                  card_lname: lastNameController.text,
-                  card_birth_date: '111111', // แทนที่ด้วยค่าจริง
-                  card_address: '78/12 ซอยประชาราษฎร์ 5 แขวงบางซื่อ เขตบางซื่อ',
-                  card_district: 'บางซื่อ',
-                  card_sub_district: 'บางซื่อ',
-                  card_postal_code: 'บางซื่อ',
-                  card_gender: 'male',
-                  card_idcard: '1103701234563',
-                  card_image: 'assets/images/members/sommai.jpg', // แทนที่ด้วยค่าจริง
-                  card_province: 'กรุงเทพมหานคร', // แทนที่ด้วยค่าจริง
-                  member_shop_images: ["assets/images/shop/shop1.jpg", "assets/images/shop/shop2.jpg"],
-                  work_days: workDays,
-                  work_times: workTimes,
-                );
-                if (addCustomer['status'] == true) {
-                  Navigator.pop(context);
+                    final start = startControllers[day]?.text.trim() ?? '';
+                    final end = endControllers[day]?.text.trim() ?? '';
+
+                    workTimes['${key}_start_time'] =
+                        isActive && start.isNotEmpty
+                            ? _formatToTime(start)
+                            : '';
+                    workTimes['${key}_end_time'] =
+                        isActive && end.isNotEmpty ? _formatToTime(end) : '';
+                  }
+                  inspect(workDays);
+                  inspect(workTimes);
+                  final addCustomer = await HomeService.customerCreate(
+                    name: nameShopController.text,
+                    detail: detailShopController.text,
+                    phone: phoneController.text,
+                    date_work: openDateController.text,
+                    time_time: openTimeController.text,
+                    lat: result!.latitude.toString(), // แทนที่ด้วยค่าจริง
+                    lon: result!.longitude.toString(), // แทนที่ด้วยค่าจริง
+                    card_fname: card_fname.text,
+                    card_lname: card_lname.text,
+                    card_birth_date: card_birth_date.text, // แทนที่ด้วยค่าจริง
+                    card_address: card_address.text,
+                    card_district: card_district.text,
+                    card_sub_district: card_sub_district.text,
+                    card_postal_code: card_postal_code.text,
+                    card_gender: card_gender.text,
+                    card_idcard: card_idcard.text, // แทนที่ด้วยค่าจริง
+                    card_image: imageAPI ?? '', // แทนที่ด้วยค่าจริง
+                    card_province: 'กรุงเทพมหานคร', // แทนที่ด้วยค่าจริง
+                    member_shop_images: listImageAPI ?? [],
+                    work_days: workDays,
+                    work_times: workTimes,
+                  );
+                  LoadingDialog.close(context);
+                  if (!mounted) return;
+                  if (addCustomer['status'] == true) {
+                    Navigator.pop(context);
+                  }
+                } on Exception catch (e) {
+                  if (!mounted) return;
+                  LoadingDialog.close(context);
+                  showDialog(
+                    context: context,
+                    builder: (context) => ErrorDialog(
+                      description: '$e',
+                      pressYes: () {
+                        Navigator.pop(context, true);
+                      },
+                    ),
+                  );
                 }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
               ),
-              child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: Text('ถัดไป',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ),
         ],
@@ -740,7 +826,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
           children: [
             Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
             Spacer(),
-            IconButton(onPressed: () {}, icon: Icon(Icons.delete, color: Colors.grey)),
+            IconButton(
+                onPressed: () {}, icon: Icon(Icons.delete, color: Colors.grey)),
           ],
         ),
         if (options.isNotEmpty)
@@ -749,7 +836,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade400),
                     borderRadius: BorderRadius.circular(20),
@@ -811,7 +899,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
     return Text(text, style: TextStyle(fontWeight: FontWeight.bold));
   }
 
-  Widget _textField(String hint, TextEditingController controller, {int maxLines = 1}) {
+  Widget _textField(String hint, TextEditingController controller,
+      {int maxLines = 1}) {
     return TextField(
       controller: controller,
       maxLines: maxLines,
