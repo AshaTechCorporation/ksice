@@ -104,15 +104,15 @@ class _MapPageState extends State<MapPage> {
     final Set<Marker> allMarkers = user.trucks![0].routes![0].route_points!.map((item) {
       return Marker(
         markerId: MarkerId(item.id.toString()),
-        position: LatLng(double.parse(item.member_branch!.latitude!), double.parse(item.member_branch!.latitude!)),
+        position: LatLng(double.parse(item.latitude!), double.parse(item.latitude!)),
         // infoWindow: InfoWindow(title: item['title']),
         icon: BitmapDescriptor.defaultMarkerWithHue(item.is_active == 1 ? BitmapDescriptor.hueGreen : BitmapDescriptor.hueBlue),
         onTap: () {
           double distanceInMeters = Geolocator.distanceBetween(
             lat!,
             long!,
-            double.parse(item.member_branch!.latitude!),
-            double.parse(item.member_branch!.latitude!),
+            double.parse(item.latitude!),
+            double.parse(item.latitude!),
           );
           print('ห่างกันกี่เมตร $distanceInMeters');
           final out = _showBottomSheet(context, distanceInMeters, item);
@@ -148,7 +148,7 @@ class _MapPageState extends State<MapPage> {
     if (mapController == null) return;
     if (mounted) {
       for (var item in user!.trucks![0].routes![0].route_points!) {
-        final LatLng latLng = LatLng(double.parse(item.member_branch!.latitude!), double.parse(item.member_branch!.latitude!));
+        final LatLng latLng = LatLng(double.parse(item.latitude!), double.parse(item.latitude!));
         final screenCoordinate = await mapController!.getScreenCoordinate(latLng);
 
         _markerScreenPositions[item.id.toString()] = Offset(
@@ -173,7 +173,7 @@ class _MapPageState extends State<MapPage> {
           load == false
               ? SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  height: size.height * 0.721,
+                  height: size.height * 0.724,
                   child: Center(child: CircularProgressIndicator()),
                 )
               : lat == null && long == null
@@ -187,7 +187,7 @@ class _MapPageState extends State<MapPage> {
                   : user == null && user?.trucks == null && user?.trucks?[0].routes == null && user?.trucks?[0].routes?[0].route_points == null
                       ? SizedBox(
                           width: MediaQuery.of(context).size.width,
-                          height: size.height * 0.721,
+                          height: size.height * 0.724,
                           child: GoogleMap(
                             initialCameraPosition: CameraPosition(
                               target: LatLng(lat!, long!), // ตำแหน่งเริ่มต้นของกล้อง

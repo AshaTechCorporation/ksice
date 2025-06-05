@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ksice/employee/map/successPage.dart';
+import 'package:ksice/model/routePoints.dart';
 import 'package:ksice/widgets/checkin_success_dialog.dart';
 
 class PaymentOrderPage extends StatefulWidget {
   const PaymentOrderPage({super.key, required this.shop, required this.itemsSelect});
-  final Map<String, dynamic> shop;
+  final RoutePoints shop;
   final List<Map<String, dynamic>> itemsSelect;
 
   @override
@@ -46,8 +47,10 @@ class _PaymentOrderPageState extends State<PaymentOrderPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('ร้านอาหารเพลินใจ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                      Text('ที่อยู๋ ที่อยู๋ ที่อยู๋ ที่อยู๋ ที่อยู๋', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 8)),
+                      Text(widget.shop.member_branch?.name ?? ' - ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                      Text(
+                          '${widget.shop.member_branch?.address ?? ' - '} ${widget.shop.member_branch?.sub_district ?? ' - '}  ${widget.shop.member_branch?.district ?? ' - '}  ${widget.shop.member_branch?.province ?? ' - '}',
+                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 8)),
                     ],
                   ),
                 ),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ksice/employee/map/paymentOrder.dart';
+import 'package:ksice/model/routePoints.dart';
 import 'package:ksice/widgets/checkin_success_dialog.dart';
 
 class OrdersItemsPage extends StatefulWidget {
   const OrdersItemsPage({super.key, required this.shop});
-  final Map<String, dynamic> shop;
+  final RoutePoints shop;
 
   @override
   State<OrdersItemsPage> createState() => _OrdersItemsPageState();

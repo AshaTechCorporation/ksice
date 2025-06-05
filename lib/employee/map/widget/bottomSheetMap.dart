@@ -157,11 +157,11 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
                               final out = await _showBottomSheet(context, widget.distanceInMeters, widget.item);
                               print(out);
                             } else {
-                              // Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              //   return OrdersItemsPage(
-                              //     shop: widget.item,
-                              //   );
-                              // }));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                return OrdersItemsPage(
+                                  shop: widget.item,
+                                );
+                              }));
                             }
                           }
                           // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => FristPage()), (route) => false);
