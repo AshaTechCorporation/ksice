@@ -138,38 +138,67 @@ class _SelectedMapPageState extends State<SelectedMapPage> {
             ),
           ),
 
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context, selectedPosition);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    'ยืนยัน',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
+          // Positioned(
+          //   bottom: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: Container(
+          //     padding: EdgeInsets.all(16),
+          //     decoration: BoxDecoration(
+          //       color: Colors.white,
+          //       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          //     ),
+          //     child: SizedBox(
+          //       width: double.infinity,
+          //       height: 48,
+          //       child: ElevatedButton(
+          //         onPressed: () {
+          //           Navigator.pop(context, selectedPosition);
+          //         },
+          //         style: ElevatedButton.styleFrom(
+          //           backgroundColor: Colors.indigo,
+          //           shape: RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.circular(8),
+          //           ),
+          //         ),
+          //         child: Text(
+          //           'ยืนยัน',
+          //           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+        ],
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          margin: EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, selectedPosition);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.indigo,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
+              ),
+              child: Text(
+                'ยืนยัน',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

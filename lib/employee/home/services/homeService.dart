@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:ksice/constants.dart';
 import 'package:ksice/utils/ApiExeption.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeService {
   const HomeService();
@@ -66,6 +67,37 @@ class HomeService {
           "member_bucket_requests": [
             {"ice_bucket_id": 1, "qty": 10}
           ]
+        }));
+    if (response.statusCode == 200) {
+      final data = convert.jsonDecode(response.body);
+      return data;
+    } else {
+      final data = convert.jsonDecode(response.body);
+      throw ApiException(data['message']);
+    }
+  }
+
+  static Future checkInPoint({
+    required int route_id,
+    required int route_point_id,
+    required double latitude,
+    required double longitude,
+    String? image,
+  }) async {
+    final url = Uri.https(publicUrl, '/public/api/driver_check_in_point');
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    final userID = prefs.getInt('userID');
+    var headers = {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'};
+    final response = await http.post(url,
+        headers: headers,
+        body: convert.jsonEncode({
+          "driver_id": userID,
+          "route_id": route_id,
+          "route_point_id": route_point_id,
+          "latitude": 13.7273450,
+          "longitude": 100.7471930,
+          "image": image,
         }));
     if (response.statusCode == 200) {
       final data = convert.jsonDecode(response.body);

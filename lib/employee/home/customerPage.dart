@@ -23,8 +23,7 @@ class CustomerPage extends StatefulWidget {
   State<CustomerPage> createState() => _CustomerPageState();
 }
 
-class _CustomerPageState extends State<CustomerPage>
-    with TickerProviderStateMixin {
+class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMixin {
   late TabController _tabController;
   final Map<String, bool> daySelected = {
     'วันจันทร์': true,
@@ -79,22 +78,34 @@ class _CustomerPageState extends State<CustomerPage>
   String _twoDigits(int n) => n.toString().padLeft(2, '0');
 
   String _formatToTime(String input) {
-    // แยกชั่วโมงและนาทีจากรูปแบบ 12 ชั่วโมง เช่น "1:41 AM"
-    final match = RegExp(r'^(\d{1,2}):(\d{2})\s?(AM|PM)$', caseSensitive: false)
-        .firstMatch(input.replaceAll(RegExp(r'[\u202F\u00A0\s]+'), ' ').trim());
+    // ล้างช่องว่างพิเศษ แล้วตัดช่องว่างหน้า/หลัง
+    input = input.replaceAll(RegExp(r'[\u202F\u00A0\s]+'), ' ').trim();
 
-    if (match == null) {
-      throw FormatException('Invalid time format: $input');
+    // ตรวจสอบรูปแบบ 12 ชั่วโมง เช่น "1:30 PM"
+    final match12 = RegExp(r'^(\d{1,2}):(\d{2})\s?(AM|PM)$', caseSensitive: false).firstMatch(input);
+    if (match12 != null) {
+      int hour = int.parse(match12.group(1)!);
+      int minute = int.parse(match12.group(2)!);
+      String period = match12.group(3)!.toUpperCase();
+
+      if (period == 'PM' && hour != 12) hour += 12;
+      if (period == 'AM' && hour == 12) hour = 0;
+
+      return '${_twoDigits(hour)}:${_twoDigits(minute)}:00';
     }
 
-    int hour = int.parse(match.group(1)!);
-    int minute = int.parse(match.group(2)!);
-    String period = match.group(3)!.toUpperCase();
+    // ตรวจสอบรูปแบบ 24 ชั่วโมง เช่น "13:30"
+    final match24 = RegExp(r'^(\d{1,2}):(\d{2})$').firstMatch(input);
+    if (match24 != null) {
+      int hour = int.parse(match24.group(1)!);
+      int minute = int.parse(match24.group(2)!);
 
-    if (period == 'PM' && hour != 12) hour += 12;
-    if (period == 'AM' && hour == 12) hour = 0;
+      if (hour >= 0 && hour < 24 && minute >= 0 && minute < 60) {
+        return '${_twoDigits(hour)}:${_twoDigits(minute)}:00';
+      }
+    }
 
-    return '${_twoDigits(hour)}:${_twoDigits(minute)}:00';
+    throw FormatException('Invalid time format: $input');
   }
 
   Future<void> _selectTime(TextEditingController controller) async {
@@ -141,6 +152,14 @@ class _CustomerPageState extends State<CustomerPage>
     setState(() {
       _tabController.index = index;
     });
+  }
+
+  String convertDateFormat(String input) {
+    // แปลงจาก '20 Mar 1957' -> '1957-03-20'
+    final inputFormat = DateFormat('dd MMM yyyy', 'en_US');
+    final outputFormat = DateFormat('yyyy-MM-dd');
+    final dateTime = inputFormat.parse(input);
+    return outputFormat.format(dateTime);
   }
 
   @override
@@ -270,13 +289,9 @@ class _CustomerPageState extends State<CustomerPage>
           SizedBox(height: 8),
           Row(
             children: [
-              Expanded(
-                  child: _imageButton('เพิ่มรูปภาพ', Icons.add_a_photo,
-                      fromCamera: false)),
+              Expanded(child: _imageButton('เพิ่มรูปภาพ', Icons.add_a_photo, fromCamera: false)),
               SizedBox(width: 8),
-              Expanded(
-                  child: _imageButton('ถ่ายภาพ', Icons.camera_alt_outlined,
-                      fromCamera: true)),
+              Expanded(child: _imageButton('ถ่ายภาพ', Icons.camera_alt_outlined, fromCamera: true)),
             ],
           ),
           SizedBox(height: 12),
@@ -295,21 +310,18 @@ class _CustomerPageState extends State<CustomerPage>
                         padding: EdgeInsets.only(right: 8),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.file(file,
-                              width: 64, height: 64, fit: BoxFit.cover),
+                          child: Image.file(file, width: 64, height: 64, fit: BoxFit.cover),
                         ),
                       ),
                       Positioned(
                         top: 0,
                         right: 0,
                         child: GestureDetector(
-                          onTap: () =>
-                              setState(() => shopImages.removeAt(index)),
+                          onTap: () => setState(() => shopImages.removeAt(index)),
                           child: CircleAvatar(
                             radius: 10,
                             backgroundColor: Colors.black54,
-                            child: Icon(Icons.close,
-                                size: 14, color: Colors.white),
+                            child: Icon(Icons.close, size: 14, color: Colors.white),
                           ),
                         ),
                       ),
@@ -337,14 +349,12 @@ class _CustomerPageState extends State<CustomerPage>
                     );
 
                     if (result != null) {
-                      print(
-                          'เลือกแล้ว: lat=${result!.latitude}, lng=${result!.longitude}');
+                      print('เลือกแล้ว: lat=${result!.latitude}, lng=${result!.longitude}');
                     }
                   },
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          6), // ✅ ลดความมนจาก 12 → 6 หรือ 4
+                      borderRadius: BorderRadius.circular(6), // ✅ ลดความมนจาก 12 → 6 หรือ 4
                     ),
                   ),
                   child: const Text('เลือกแผนที่'),
@@ -367,9 +377,7 @@ class _CustomerPageState extends State<CustomerPage>
               onPressed: () async {
                 goToStep(1);
               },
-              child: Text('ถัดไป',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold)),
+              child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           )
         ],
@@ -440,30 +448,26 @@ class _CustomerPageState extends State<CustomerPage>
               height: 48,
               child: ElevatedButton(
                 onPressed: () async {
-                  final out = await Navigator.push(context,
-                      MaterialPageRoute(builder: (context) {
+                  final out = await Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return IDCardCameraPage();
                   }));
                   if (out != null) {
                     try {
                       LoadingDialog.open(context);
-                      final ocr =
-                          await UoloadService.ocrIdCard(file: File(out.path));
-                      final image = await UoloadService.addImage(
-                          file: File(out.path), path: 'images/asset/');
+                      final ocr = await UoloadService.ocrIdCard(file: File(out.path));
+                      final image = await UoloadService.addImage(file: File(out.path), path: 'images/asset/');
 
                       setState(() {
                         imageAPI = image;
                         card_fname.text = ocr['th_fname'];
                         card_lname.text = ocr['th_lname'];
-                        card_address.text =
-                            '${ocr['home_address']} ${ocr['sub_district']} ${ocr['district']} ${ocr['province']}';
-                        card_birth_date.text = ocr['birth_date'];
+                        card_address.text = ocr['address'];
+                        card_birth_date.text = ocr['en_dob'];
                         card_district.text = ocr['district'];
                         card_sub_district.text = ocr['sub_district'];
                         card_postal_code.text = ocr['postal_code'];
-                        card_gender.text = '';
-                        card_idcard.text = ocr['id_card'];
+                        card_gender.text = ocr['gender'];
+                        card_idcard.text = ocr['id_number'];
                         card_province.text = ocr['province'];
                         scanned = true;
                       });
@@ -530,21 +534,16 @@ class _CustomerPageState extends State<CustomerPage>
                 ),
                 child: Text(
                   'สแกนบัตรประชาชน',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
           ] else ...[
             Row(
               children: [
-                Expanded(
-                    child:
-                        FormInputField(hint: 'ชื่อ', controller: card_fname)),
+                Expanded(child: FormInputField(hint: 'ชื่อ', controller: card_fname)),
                 SizedBox(width: 8),
-                Expanded(
-                    child: FormInputField(
-                        hint: 'นามสกุล', controller: card_lname)),
+                Expanded(child: FormInputField(hint: 'นามสกุล', controller: card_lname)),
               ],
             ),
             SizedBox(height: 16),
@@ -571,9 +570,7 @@ class _CustomerPageState extends State<CustomerPage>
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Text('ถัดไป',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
           ]
@@ -590,8 +587,7 @@ class _CustomerPageState extends State<CustomerPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('เลือกวันเวลาที่ต้องการส่ง',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('เลือกวันเวลาที่ต้องการส่ง', style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 12),
           ...days.map((day) {
             startControllers.putIfAbsent(day, () => TextEditingController());
@@ -615,9 +611,7 @@ class _CustomerPageState extends State<CustomerPage>
                   _timePickerField(startControllers[day]!),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
-                    child: Text('-',
-                        style: TextStyle(
-                            fontSize: 16, color: Colors.grey.shade700)),
+                    child: Text('-', style: TextStyle(fontSize: 16, color: Colors.grey.shade700)),
                   ),
                   _timePickerField(endControllers[day]!),
                 ],
@@ -666,8 +660,7 @@ class _CustomerPageState extends State<CustomerPage>
                         padding: const EdgeInsets.only(right: 8),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.file(file,
-                              width: 100, height: 80, fit: BoxFit.cover),
+                          child: Image.file(file, width: 100, height: 80, fit: BoxFit.cover),
                         ),
                       ),
                       Positioned(
@@ -682,8 +675,7 @@ class _CustomerPageState extends State<CustomerPage>
                           child: CircleAvatar(
                             radius: 12,
                             backgroundColor: Colors.black54,
-                            child: Icon(Icons.close,
-                                size: 16, color: Colors.white),
+                            child: Icon(Icons.close, size: 16, color: Colors.white),
                           ),
                         ),
                       )
@@ -698,8 +690,7 @@ class _CustomerPageState extends State<CustomerPage>
             options: ['เล็ก', 'กลาง', 'ใหญ่'],
             quantity: iceTankQty,
             onAdd: () => setState(() => iceTankQty++),
-            onRemove: () => setState(
-                () => iceTankQty = (iceTankQty > 0) ? iceTankQty - 1 : 0),
+            onRemove: () => setState(() => iceTankQty = (iceTankQty > 0) ? iceTankQty - 1 : 0),
           ),
           Divider(),
           _productCard(
@@ -707,8 +698,7 @@ class _CustomerPageState extends State<CustomerPage>
             options: [],
             quantity: iceCubeQty,
             onAdd: () => setState(() => iceCubeQty++),
-            onRemove: () => setState(
-                () => iceCubeQty = (iceCubeQty > 0) ? iceCubeQty - 1 : 0),
+            onRemove: () => setState(() => iceCubeQty = (iceCubeQty > 0) ? iceCubeQty - 1 : 0),
           ),
           SizedBox(height: 24),
           SizedBox(
@@ -721,17 +711,12 @@ class _CustomerPageState extends State<CustomerPage>
                   selectedImages.clear();
                   if (selectedImages.isNotEmpty) {
                     for (var i = 0; i < selectedImages.length; i++) {
-                      final image = await UoloadService.addImage(
-                          file: File(selectedImages[i].path),
-                          path: 'images/asset/');
+                      final image = await UoloadService.addImage(file: File(selectedImages[i].path), path: 'images/asset/');
                       selectedImages.add(image);
                     }
                   }
 
-                  final Map<String, int> workDays = {
-                    for (var entry in daySelected.entries)
-                      thaiToKey[entry.key]!: entry.value ? 1 : 0
-                  };
+                  final Map<String, int> workDays = {for (var entry in daySelected.entries) thaiToKey[entry.key]!: entry.value ? 1 : 0};
                   Map<String, String> workTimes = {};
                   for (final day in thaiToKey.keys) {
                     final key = thaiToKey[day]!;
@@ -740,12 +725,8 @@ class _CustomerPageState extends State<CustomerPage>
                     final start = startControllers[day]?.text.trim() ?? '';
                     final end = endControllers[day]?.text.trim() ?? '';
 
-                    workTimes['${key}_start_time'] =
-                        isActive && start.isNotEmpty
-                            ? _formatToTime(start)
-                            : '';
-                    workTimes['${key}_end_time'] =
-                        isActive && end.isNotEmpty ? _formatToTime(end) : '';
+                    workTimes['${key}_start_time'] = isActive && start.isNotEmpty ? _formatToTime(start) : '';
+                    workTimes['${key}_end_time'] = isActive && end.isNotEmpty ? _formatToTime(end) : '';
                   }
                   inspect(workDays);
                   inspect(workTimes);
@@ -759,7 +740,7 @@ class _CustomerPageState extends State<CustomerPage>
                     lon: result!.longitude.toString(), // แทนที่ด้วยค่าจริง
                     card_fname: card_fname.text,
                     card_lname: card_lname.text,
-                    card_birth_date: card_birth_date.text, // แทนที่ด้วยค่าจริง
+                    card_birth_date: convertDateFormat(card_birth_date.text), // แทนที่ด้วยค่าจริง
                     card_address: card_address.text,
                     card_district: card_district.text,
                     card_sub_district: card_sub_district.text,
@@ -793,12 +774,9 @@ class _CustomerPageState extends State<CustomerPage>
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              child: Text('ถัดไป',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold)),
+              child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ),
         ],
@@ -842,8 +820,7 @@ class _CustomerPageState extends State<CustomerPage>
           children: [
             Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
             Spacer(),
-            IconButton(
-                onPressed: () {}, icon: Icon(Icons.delete, color: Colors.grey)),
+            IconButton(onPressed: () {}, icon: Icon(Icons.delete, color: Colors.grey)),
           ],
         ),
         if (options.isNotEmpty)
@@ -852,8 +829,7 @@ class _CustomerPageState extends State<CustomerPage>
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade400),
                     borderRadius: BorderRadius.circular(20),
@@ -915,8 +891,7 @@ class _CustomerPageState extends State<CustomerPage>
     return Text(text, style: TextStyle(fontWeight: FontWeight.bold));
   }
 
-  Widget _textField(String hint, TextEditingController controller,
-      {int maxLines = 1}) {
+  Widget _textField(String hint, TextEditingController controller, {int maxLines = 1}) {
     return TextField(
       controller: controller,
       maxLines: maxLines,

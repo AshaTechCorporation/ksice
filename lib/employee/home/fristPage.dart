@@ -6,7 +6,8 @@ import 'package:ksice/employee/map/mapPage.dart';
 import 'package:ksice/employee/profile/profilePage.dart';
 
 class FristPage extends StatefulWidget {
-  const FristPage({super.key});
+  const FristPage({super.key, this.pageNum});
+  final int? pageNum;
 
   @override
   State<FristPage> createState() => _FristPageState();
@@ -17,6 +18,15 @@ class _FristPageState extends State<FristPage> {
   final PageStorageBucket bucket = PageStorageBucket();
   Widget currentScreen = HomePage();
   int selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.pageNum != null) {
+      selectedIndex = widget.pageNum!;
+      onItemTapped(widget.pageNum!);
+    }
+  }
 
   void onItemTapped(int index) {
     setState(() {
