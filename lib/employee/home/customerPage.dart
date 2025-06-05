@@ -691,8 +691,9 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                             insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                             child: Container(
-                              width: MediaQuery.of(context).size.width * 0.85,
+                              width: MediaQuery.of(context).size.width * 0.95,
                               height: MediaQuery.of(context).size.height * 0.7,
+                              color: Colors.white,
                               padding: const EdgeInsets.all(16),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -726,11 +727,11 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                 productCategory.length,
                                                 (index) => index.isEven
                                                     ? Padding(
-                                                        padding: const EdgeInsets.symmetric(vertical: 6),
+                                                        padding: const EdgeInsets.symmetric(vertical: 2),
                                                         child: Row(
                                                           children: [
                                                             CircleAvatar(
-                                                              radius: 28,
+                                                              radius: 24,
                                                               backgroundColor: Colors.white,
                                                               child: ClipOval(
                                                                 child:
@@ -741,16 +742,16 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                                             height: 56,
                                                                             fit: BoxFit.fill,
                                                                             errorBuilder: (context, error, stackTrace) {
-                                                                              return Image.network(
-                                                                                'https://cdn-icons-png.flaticon.com/512/1046/1046857.png',
+                                                                              return Image.asset(
+                                                                                'assets/images/ice.png',
                                                                                 width: 56,
                                                                                 height: 56,
                                                                                 fit: BoxFit.fill,
                                                                               );
                                                                             },
                                                                           )
-                                                                        : Image.network(
-                                                                            'https://cdn-icons-png.flaticon.com/512/1046/1046857.png',
+                                                                        : Image.asset(
+                                                                            'assets/images/ice.png',
                                                                             width: 56,
                                                                             height: 56,
                                                                             fit: BoxFit.fill,
@@ -765,7 +766,7 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                                   Text(
                                                                     productCategory[index].name ?? '',
                                                                     style: const TextStyle(
-                                                                      fontSize: 14,
+                                                                      fontSize: 15,
                                                                       fontWeight: FontWeight.w500,
                                                                     ),
                                                                     maxLines: 2,
@@ -804,11 +805,11 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                 productCategory.length,
                                                 (index) => index.isOdd
                                                     ? Padding(
-                                                        padding: const EdgeInsets.symmetric(vertical: 6),
+                                                        padding: const EdgeInsets.symmetric(vertical: 2),
                                                         child: Row(
                                                           children: [
                                                             CircleAvatar(
-                                                              radius: 28,
+                                                              radius: 24,
                                                               backgroundColor: Colors.white,
                                                               child: ClipOval(
                                                                 child:
@@ -819,16 +820,16 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                                             height: 56,
                                                                             fit: BoxFit.fill,
                                                                             errorBuilder: (context, error, stackTrace) {
-                                                                              return Image.network(
-                                                                                'https://cdn-icons-png.flaticon.com/512/1046/1046857.png',
+                                                                              return Image.asset(
+                                                                                'assets/images/ice.png',
                                                                                 width: 56,
                                                                                 height: 56,
                                                                                 fit: BoxFit.fill,
                                                                               );
                                                                             },
                                                                           )
-                                                                        : Image.network(
-                                                                            'https://cdn-icons-png.flaticon.com/512/1046/1046857.png',
+                                                                        : Image.asset(
+                                                                            'assets/images/ice.png',
                                                                             width: 56,
                                                                             height: 56,
                                                                             fit: BoxFit.fill,
@@ -843,7 +844,7 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                                   Text(
                                                                     productCategory[index].name ?? '',
                                                                     style: const TextStyle(
-                                                                      fontSize: 14,
+                                                                      fontSize: 15,
                                                                       fontWeight: FontWeight.w500,
                                                                     ),
                                                                     maxLines: 2,
@@ -891,11 +892,11 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                       },
                                       style: ElevatedButton.styleFrom(
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                        backgroundColor: const Color(0xFF1D318C),
+                                        backgroundColor: buttonColor,
                                       ),
                                       child: const Text(
                                         'ยืนยัน',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
                                       ),
                                     ),
                                   ),
@@ -1131,7 +1132,8 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 2,
+      elevation: 1,
+      color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
