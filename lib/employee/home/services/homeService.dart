@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:ksice/constants.dart';
 import 'package:ksice/model/productcategory.dart';
+import 'package:ksice/model/driverCar/driverCar.dart';
 import 'package:ksice/utils/ApiExeption.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -116,10 +117,28 @@ class HomeService {
     final headers = {'Authorization': 'Bearer $token'};
     final response = await http.get(url, headers: headers).timeout(const Duration(minutes: 1));
 
+      if (response.statusCode == 200) {
+      final data = convert.jsonDecode(response.body);
+      final list = data["data"] as List;
+      return list.map((e) => ProductCategory.fromJson(e)).toList();
+    } else {
+      final data = convert.jsonDecode(response.body);
+      throw ApiException(data['message']);
+    }
+  }
+  static Future<List<DriverCar>> getListDriver({
+    String? search,
+    String? status,
+  }) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    var headers = {'Authorization': 'Bearer $token', 'Content-Type': 'application/json'};
+    final url = Uri.https(publicUrl, '/public/api/get_driver');
+    final response = await http.get(url, headers: headers).timeout(const Duration(minutes: 1));
     if (response.statusCode == 200) {
       final data = convert.jsonDecode(response.body);
-      final list = data['data'] as List;
-      return list.map((e) => ProductCategory.fromJson(e)).toList();
+      final list = data["data"] as List;
+      return list.map((e) => DriverCar.fromJson(e)).toList();
     } else {
       final data = convert.jsonDecode(response.body);
       throw ApiException(data['message']);

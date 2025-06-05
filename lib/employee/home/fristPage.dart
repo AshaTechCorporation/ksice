@@ -78,6 +78,7 @@ class _FristPageState extends State<FristPage> {
     return Scaffold(
       key: scaffoldKey,
       extendBody: true,
+      backgroundColor: Colors.white,
       body: SafeArea(
           child: PageStorage(
         bucket: bucket,
