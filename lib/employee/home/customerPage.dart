@@ -167,9 +167,9 @@ class _CustomerPageState extends State<CustomerPage>
               child: Row(
                 children: [
                   _stepItem(0, 'ข้อมูลร้าน'),
-                  _stepDivider(),
+                  _stepDivider(0),
                   _stepItem(1, 'ข้อมูลลูกค้า'),
-                  _stepDivider(),
+                  _stepDivider(1),
                   _stepItem(2, 'ข้อมูลบริการ'),
                 ],
               ),
@@ -194,7 +194,7 @@ class _CustomerPageState extends State<CustomerPage>
   }
 
   Widget _stepItem(int index, String label) {
-    bool active = _tabController.index == index;
+    bool active = _tabController.index >= index;
     return Expanded(
       child: GestureDetector(
         onTap: () => goToStep(index),
@@ -227,11 +227,12 @@ class _CustomerPageState extends State<CustomerPage>
     );
   }
 
-  Widget _stepDivider() {
+  Widget _stepDivider(int index) {
+    bool active = index <= _tabController.index;
     return Container(
       width: 24,
       height: 2,
-      color: Colors.grey.shade300,
+      color: active ? Colors.indigo : Colors.grey.shade300,
     );
   }
 
