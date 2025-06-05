@@ -998,32 +998,32 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
             child: ElevatedButton(
               onPressed: () async {
                 try {
-                  // LoadingDialog.open(context);
-                  // shopImages.clear();
-                  // List<Map<String, dynamic>> memberProductRequests = [];
+                  LoadingDialog.open(context);
+                  shopImages.clear();
+                  List<Map<String, dynamic>> memberProductRequests = [];
 
-                  // for (var product in selectedProducts) {
-                  //   // ถ้าไม่มี unit ให้ใช้ 1 แทน
-                  //   final unitId = product.product_units != null && product.product_units!.isNotEmpty ? product.product_units!.first.id : 1;
+                  for (var product in selectedProducts) {
+                    // ถ้าไม่มี unit ให้ใช้ 1 แทน
+                    final unitId = product.product_units != null && product.product_units!.isNotEmpty ? product.product_units!.first.id : 1;
 
-                  //   final qty = quantities[product.id] ?? 1;
+                    final qty = quantities[product.id] ?? 1;
 
-                  //   if (qty > 0) {
-                  //     memberProductRequests.add({
-                  //       'product_id': product.id,
-                  //       'product_unit_id': unitId,
-                  //       'qty': qty,
-                  //     });
-                  //   }
-                  // }
+                    if (qty > 0) {
+                      memberProductRequests.add({
+                        'product_id': product.id,
+                        'product_unit_id': unitId,
+                        'qty': qty,
+                      });
+                    }
+                  }
 
-                  // //inspect(memberProductRequests);
-                  // if (shopImages.isNotEmpty) {
-                  //   for (var i = 0; i < shopImages.length; i++) {
-                  //     final image = await UoloadService.addImage(file: File(shopImages[i].path), path: 'images/asset/');
-                  //     listImageAPI!.add(image);
-                  //   }
-                  // }
+                  //inspect(memberProductRequests);
+                  if (shopImages.isNotEmpty) {
+                    for (var i = 0; i < shopImages.length; i++) {
+                      final image = await UoloadService.addImage(file: File(shopImages[i].path), path: 'images/asset/');
+                      listImageAPI!.add(image);
+                    }
+                  }
 
                   final Map<String, int> workDays = {for (var entry in daySelected.entries) thaiToKey[entry.key]!: entry.value ? 1 : 0};
                   Map<String, String> workTimes = {};
@@ -1039,34 +1039,34 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                   }
                   inspect(workDays);
                   inspect(workTimes);
-                  // final addCustomer = await HomeService.customerCreate(
-                  //     name: nameShopController.text,
-                  //     detail: detailShopController.text,
-                  //     phone: phoneController.text,
-                  //     date_work: openDateController.text,
-                  //     time_time: openTimeController.text,
-                  //     lat: result!.latitude.toString(), // แทนที่ด้วยค่าจริง
-                  //     lon: result!.longitude.toString(), // แทนที่ด้วยค่าจริง
-                  //     card_fname: card_fname.text,
-                  //     card_lname: card_lname.text,
-                  //     card_birth_date: convertDateFormat(card_birth_date.text), // แทนที่ด้วยค่าจริง
-                  //     card_address: card_address.text,
-                  //     card_district: card_district.text,
-                  //     card_sub_district: card_sub_district.text,
-                  //     card_postal_code: card_postal_code.text,
-                  //     card_gender: card_gender.text,
-                  //     card_idcard: card_idcard.text, // แทนที่ด้วยค่าจริง
-                  //     card_image: imageAPI ?? '', // แทนที่ด้วยค่าจริง
-                  //     card_province: 'กรุงเทพมหานคร', // แทนที่ด้วยค่าจริง
-                  //     member_shop_images: listImageAPI ?? [],
-                  //     work_days: workDays,
-                  //     work_times: workTimes,
-                  //     member_product_requests: memberProductRequests);
-                  // LoadingDialog.close(context);
-                  // if (!mounted) return;
-                  // if (addCustomer['status'] == true) {
-                  //   Navigator.pop(context);
-                  // }
+                  final addCustomer = await HomeService.customerCreate(
+                      name: nameShopController.text,
+                      detail: detailShopController.text,
+                      phone: phoneController.text,
+                      date_work: openDateController.text,
+                      time_time: openTimeController.text,
+                      lat: result!.latitude.toString(), // แทนที่ด้วยค่าจริง
+                      lon: result!.longitude.toString(), // แทนที่ด้วยค่าจริง
+                      card_fname: card_fname.text,
+                      card_lname: card_lname.text,
+                      card_birth_date: convertDateFormat(card_birth_date.text), // แทนที่ด้วยค่าจริง
+                      card_address: card_address.text,
+                      card_district: card_district.text,
+                      card_sub_district: card_sub_district.text,
+                      card_postal_code: card_postal_code.text,
+                      card_gender: card_gender.text,
+                      card_idcard: card_idcard.text, // แทนที่ด้วยค่าจริง
+                      card_image: imageAPI ?? '', // แทนที่ด้วยค่าจริง
+                      card_province: 'กรุงเทพมหานคร', // แทนที่ด้วยค่าจริง
+                      member_shop_images: listImageAPI ?? [],
+                      work_days: workDays,
+                      work_times: workTimes,
+                      member_product_requests: memberProductRequests);
+                  LoadingDialog.close(context);
+                  if (!mounted) return;
+                  if (addCustomer['status'] == true) {
+                    Navigator.pop(context);
+                  }
                 } on Exception catch (e) {
                   if (!mounted) return;
                   LoadingDialog.close(context);
