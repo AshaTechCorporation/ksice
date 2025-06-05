@@ -96,8 +96,8 @@ class _BottonSheetMapDriverState extends State<BottonSheetMapDriver> {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          // Text(widget.item.member_branch?.name ?? ' - ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                                          // Text(widget.item.member_branch?.contact_phone ?? ' - ', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
+                                          Text(widget.driver.latest_checkin?.route_point?.member_branch?.name ?? ' - ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                                          Text(widget.driver.latest_checkin?.route_point?.member_branch?.contact_phone ?? ' - ', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
                                         ],
                                       ),
                                       SizedBox(height: 4),
@@ -114,7 +114,7 @@ class _BottonSheetMapDriverState extends State<BottonSheetMapDriver> {
                               ],
                             ),
                             SizedBox(
-                              height: currentExtent > 0.7 ? size.height * 0.7 : size.height * 0.3,
+                              height: currentExtent > 0.7 ? size.height * 0.7 : size.height * 0.4,
                               child: SingleChildScrollView(
                                 controller: scrollController,
                                 child: Column(
@@ -123,9 +123,9 @@ class _BottonSheetMapDriverState extends State<BottonSheetMapDriver> {
                                     SizedBox(height: 10),
                                     Text('ที่อยู่', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                                     SizedBox(height: 10),
-                                    // Text(
-                                    //     '${widget.item.member_branch?.address ?? ' - '} ${widget.item.member_branch?.sub_district ?? ' - '}  ${widget.item.member_branch?.district ?? ' - '}  ${widget.item.member_branch?.province ?? ' - '}',
-                                    //     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                    Text(
+                                        '${widget.driver.latest_checkin?.route_point?.member_branch?.address ?? ' - '} ${widget.driver.latest_checkin?.route_point?.member_branch?.sub_district ?? ' - '}  ${widget.driver.latest_checkin?.route_point?.member_branch?.district ?? ' - '}  ${widget.driver.latest_checkin?.route_point?.member_branch?.province ?? ' - '}',
+                                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
                                     SizedBox(height: 10),
                                     Text('วันเวลาที่ต้องส่ง', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                                     SizedBox(height: 10),
