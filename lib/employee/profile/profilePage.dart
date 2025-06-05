@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ksice/login/Service/loginService.dart';
+import 'package:ksice/login/loginPage.dart';
 import 'package:ksice/model/user.dart';
+import 'package:ksice/widgets/AlertDialogExit.dart';
 import 'package:ksice/widgets/checkin_success_dialog.dart';
 import 'package:ksice/widgets/loadingDialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -95,11 +97,30 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: double.infinity,
                       child: OutlinedButton(
                         onPressed: () async {
-                          showDialog(
+                          // showDialog(
+                          //   context: context,
+                          //   builder: (context) => CheckInSuccessDialog(timeText: '12:00 น.'),
+                          // );
+                          final ok = await showDialog(
+                            barrierDismissible: false,
                             context: context,
-                            builder: (context) =>
-                                CheckInSuccessDialog(timeText: '12:00 น.'),
+                            builder: (context) => AlertDialogExit(
+                              title: 'แจ้งเตือน',
+                              description: 'ต้องออกจากระบบหรือไม่',
+                              pressYes: () {
+                                Navigator.pop(context, true);
+                              },
+                              pressNo: () {
+                                Navigator.pop(context, false);
+                              },
+                              orderNo: '',
+                            ),
                           );
+                          if (ok == true) {
+                            if (!mounted) return;
+                            await clearToken();
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage()), (route) => true);
+                          }
                         },
                         style: OutlinedButton.styleFrom(
                           side: BorderSide(color: Colors.red),
@@ -162,6 +183,7 @@ class _ProfilePageState extends State<ProfilePage> {
       padding: EdgeInsets.only(bottom: 16),
       child: TextField(
         controller: controller,
+        readOnly: true,
         decoration: InputDecoration(
           labelText: label,
           filled: true,
@@ -174,4 +196,9 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
+}
+
+Future<void> clearToken() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.clear();
 }
