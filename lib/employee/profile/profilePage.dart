@@ -98,25 +98,26 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: OutlinedButton(
                         onPressed: () async {
                           // showDialog(
-                          //   context: context,
+                          //   context: context,ต้องออกจากระบบหรือไม่
                           //   builder: (context) => CheckInSuccessDialog(timeText: '12:00 น.'),
                           // );
-                          final ok = await showDialog(
+                          final out = await showDialog(
                             barrierDismissible: false,
                             context: context,
-                            builder: (context) => AlertDialogExit(
-                              title: 'แจ้งเตือน',
-                              description: 'ต้องออกจากระบบหรือไม่',
-                              pressYes: () {
-                                Navigator.pop(context, true);
-                              },
-                              pressNo: () {
-                                Navigator.pop(context, false);
-                              },
-                              orderNo: '',
-                            ),
+                            builder: (context) {
+                              return ChoiceDialog(
+                                description: 'ต้องออกจากระบบหรือไม่?',
+                                type: 'save',
+                                pressNo: () {
+                                  Navigator.pop(context, false);
+                                },
+                                pressYes: () {
+                                  Navigator.pop(context, true);
+                                },
+                              );
+                            },
                           );
-                          if (ok == true) {
+                          if (out == true) {
                             if (!mounted) return;
                             await clearToken();
                             Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage()), (route) => true);
