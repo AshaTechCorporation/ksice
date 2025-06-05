@@ -305,7 +305,7 @@ class _ListCarPageState extends State<ListCarPage> {
                                         _moveToLocation(LatLng(double.parse(driver[index].latest_checkin!.latitude!), double.parse(driver[index].latest_checkin!.longitude!)));
                                         selectedPosition = LatLng(double.parse(driver[index].latest_checkin!.latitude!), double.parse(driver[index].latest_checkin!.longitude!));
                                       });
-                                      _showBottomSheet(driver[index]);
+                                      // _showBottomSheet(driver[index]);
                                     }
                                   },
                                   child: Column(
