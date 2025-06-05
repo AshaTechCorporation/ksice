@@ -57,7 +57,7 @@ class _SuccessPageState extends State<SuccessPage> {
               ),
               child: Text(
                 'กลับไปหน้าหลัก',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ),
           ),
