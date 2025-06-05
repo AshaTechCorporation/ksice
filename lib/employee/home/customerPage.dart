@@ -734,28 +734,27 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                               radius: 24,
                                                               backgroundColor: Colors.white,
                                                               child: ClipOval(
-                                                                child:
-                                                                    productCategory[index].image != null && productCategory[index].image!.isNotEmpty
-                                                                        ? Image.network(
-                                                                            productCategory[index].image!,
-                                                                            width: 56,
-                                                                            height: 56,
-                                                                            fit: BoxFit.fill,
-                                                                            errorBuilder: (context, error, stackTrace) {
-                                                                              return Image.asset(
-                                                                                'assets/images/ice.png',
-                                                                                width: 56,
-                                                                                height: 56,
-                                                                                fit: BoxFit.fill,
-                                                                              );
-                                                                            },
-                                                                          )
-                                                                        : Image.asset(
+                                                                child: productCategory[index].image != null && productCategory[index].image!.isNotEmpty
+                                                                    ? Image.network(
+                                                                        productCategory[index].image!,
+                                                                        width: 56,
+                                                                        height: 56,
+                                                                        fit: BoxFit.fill,
+                                                                        errorBuilder: (context, error, stackTrace) {
+                                                                          return Image.asset(
                                                                             'assets/images/ice.png',
                                                                             width: 56,
                                                                             height: 56,
                                                                             fit: BoxFit.fill,
-                                                                          ),
+                                                                          );
+                                                                        },
+                                                                      )
+                                                                    : Image.asset(
+                                                                        'assets/images/ice.png',
+                                                                        width: 56,
+                                                                        height: 56,
+                                                                        fit: BoxFit.fill,
+                                                                      ),
                                                               ),
                                                             ),
                                                             const SizedBox(width: 8),
@@ -812,28 +811,27 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                               radius: 24,
                                                               backgroundColor: Colors.white,
                                                               child: ClipOval(
-                                                                child:
-                                                                    productCategory[index].image != null && productCategory[index].image!.isNotEmpty
-                                                                        ? Image.network(
-                                                                            productCategory[index].image!,
-                                                                            width: 56,
-                                                                            height: 56,
-                                                                            fit: BoxFit.fill,
-                                                                            errorBuilder: (context, error, stackTrace) {
-                                                                              return Image.asset(
-                                                                                'assets/images/ice.png',
-                                                                                width: 56,
-                                                                                height: 56,
-                                                                                fit: BoxFit.fill,
-                                                                              );
-                                                                            },
-                                                                          )
-                                                                        : Image.asset(
+                                                                child: productCategory[index].image != null && productCategory[index].image!.isNotEmpty
+                                                                    ? Image.network(
+                                                                        productCategory[index].image!,
+                                                                        width: 56,
+                                                                        height: 56,
+                                                                        fit: BoxFit.fill,
+                                                                        errorBuilder: (context, error, stackTrace) {
+                                                                          return Image.asset(
                                                                             'assets/images/ice.png',
                                                                             width: 56,
                                                                             height: 56,
                                                                             fit: BoxFit.fill,
-                                                                          ),
+                                                                          );
+                                                                        },
+                                                                      )
+                                                                    : Image.asset(
+                                                                        'assets/images/ice.png',
+                                                                        width: 56,
+                                                                        height: 56,
+                                                                        fit: BoxFit.fill,
+                                                                      ),
                                                               ),
                                                             ),
                                                             const SizedBox(width: 8),
@@ -1057,7 +1055,7 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                       card_gender: card_gender.text,
                       card_idcard: card_idcard.text, // แทนที่ด้วยค่าจริง
                       card_image: imageAPI ?? '', // แทนที่ด้วยค่าจริง
-                      card_province: 'กรุงเทพมหานคร', // แทนที่ด้วยค่าจริง
+                      card_province: card_province.text, // แทนที่ด้วยค่าจริง
                       member_shop_images: listImageAPI ?? [],
                       work_days: workDays,
                       work_times: workTimes,
