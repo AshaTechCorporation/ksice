@@ -185,15 +185,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _buildGaugeWithLabels() {
     return SizedBox(
       width: double.infinity,
-      height: 130,
+      height: 250,
       child: Stack(
         children: [
           SfRadialGauge(
             axes: <RadialAxis>[
               RadialAxis(
-                radiusFactor: 1.5,
+                radiusFactor: 1.15,
                 centerX: 0.5,
-                centerY: 0.9,
+                centerY: 0.75,
                 startAngle: 180,
                 endAngle: 360,
                 showLabels: false,
@@ -328,9 +328,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   List<Widget> _buildOverlayLabels() {
     List<int> values = [0, 20, 40, 60, 80, 100];
-    double radius = 110; // ✅ ขยับให้อยู่บนโค้ง
-    double centerX = 170;
-    double centerY = 110;
+    double radius = 150; // ✅ ขยับให้อยู่บนโค้ง
+    double centerX = 175;
+    double centerY = 180;
 
     return values.map((v) {
       double angle = 180 - (v / 100 * 180);
