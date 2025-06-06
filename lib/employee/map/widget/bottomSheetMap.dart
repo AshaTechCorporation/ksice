@@ -202,17 +202,17 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (widget.distanceInMeters <= 30000) {
-                          if (widget.item.is_active == 1) {
-                            Navigator.pop(context);
-                            final out = await _showBottomSheet(context, widget.item, widget.lat, widget.long);
-                            print(out);
-                          } else {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return OrdersItemsPage(
-                                shop: widget.item,
-                              );
-                            }));
-                          }
+                          // if (widget.item.is_active == 1) {
+                          Navigator.pop(context);
+                          final out = await _showBottomSheet(context, widget.item, widget.lat, widget.long);
+                          print(out);
+                          // } else {
+                          //   Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          //     return OrdersItemsPage(
+                          //       shop: widget.item,
+                          //     );
+                          //   }));
+                          // }
                         }
                         // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => FristPage()), (route) => false);
                       },
@@ -402,11 +402,11 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
                           String? imageAPI;
                           try {
                             LoadingDialog.open(context);
-                            if (listimages != null) {
-                              final image = await UoloadService.addImage(file: listimages, path: 'images/asset/');
-                              imageAPI = image;
-                            }
-                            await HomeService.checkInPoint(route_id: widget.item.route_id!, route_point_id: widget.item.id, latitude: widget.lat, longitude: widget.long, image: imageAPI);
+                            // if (listimages != null) {
+                            //   final image = await UoloadService.addImage(file: listimages, path: 'images/asset/');
+                            //   imageAPI = image;
+                            // }
+                            // await HomeService.checkInPoint(route_id: widget.item.route_id!, route_point_id: widget.item.id, latitude: widget.lat, longitude: widget.long, image: imageAPI);
                             LoadingDialog.close(context);
                             await showDialog(
                               barrierDismissible: false,

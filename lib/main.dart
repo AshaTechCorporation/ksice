@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ksice/employee/home/fristPage.dart';
 import 'package:ksice/login/Service/loginController.dart';
 import 'package:ksice/login/loginPage.dart';
@@ -9,6 +10,9 @@ String? token;
 late SharedPreferences prefs;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.immersiveSticky, // ซ่อน status + navigation bar และเด้งกลับมาเมื่อปัด
+  );
 
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   prefs = await SharedPreferences.getInstance();

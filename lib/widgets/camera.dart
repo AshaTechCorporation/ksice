@@ -63,10 +63,10 @@ class _IDCardCameraPageState extends State<IDCardCameraPage> {
       if (original == null) return;
 
       // สร้าง crop ตามกรอบตรงกลาง (สัดส่วน 1.6:1 เหมือนบัตร)
-      final cropWidth = (original.width * 0.6).toInt();
-      final cropHeight = (cropWidth / 1.4).toInt();
+      final cropWidth = (original.width * 0.9).toInt();
+      final cropHeight = (cropWidth / 1.8).toInt();
       final cropX = (original.width ~/ 1.8) - (cropWidth ~/ 1.8);
-      final cropY = (original.height ~/ 1.8) - (cropHeight ~/ 1.8);
+      final cropY = (original.height ~/ 1.6) - (cropHeight ~/ 1.6);
 
       final cropped = img.copyCrop(original, cropX, cropY, cropWidth, cropHeight);
       final tempDir = await getTemporaryDirectory();
@@ -175,8 +175,8 @@ class _IDCardCameraPageState extends State<IDCardCameraPage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenW = constraints.maxWidth;
-        final frameW = screenW * 0.7;
-        final frameH = frameW / 1.7;
+        final frameW = screenW * 0.9;
+        final frameH = frameW / 1.5;
 
         return Stack(
           children: [

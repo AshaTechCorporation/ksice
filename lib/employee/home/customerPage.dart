@@ -437,7 +437,10 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                       borderRadius: BorderRadius.circular(6), // ✅ ลดความมนจาก 12 → 6 หรือ 4
                     ),
                   ),
-                  child: const Text('เลือกแผนที่'),
+                  child: const Text(
+                    'เลือกแผนที่',
+                    // style: TextStyle(color: Colors.black),
+                  ),
                 ),
               ),
             ],

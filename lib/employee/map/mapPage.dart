@@ -358,7 +358,7 @@ class _MapPageState extends State<MapPage> {
                         )
                       : SizedBox(
                           width: MediaQuery.of(context).size.width,
-                          height: size.height * 0.715,
+                          height: size.height * 0.745,
                           child: Stack(
                             children: [
                               GoogleMap(
