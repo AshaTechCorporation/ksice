@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:ksice/employee/home/fristPage.dart';
 import 'package:ksice/employee/home/services/homeService.dart';
 import 'package:ksice/employee/map/ordersItem.dart';
@@ -42,8 +43,7 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
         minChildSize: 0.3,
         builder: (_, scrollController) {
           return Container(
-            decoration:
-                BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -98,8 +98,7 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(widget.item.member_branch?.name ?? ' - ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                                        Text(widget.item.member_branch?.contact_phone ?? ' - ',
-                                            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
+                                        Text(widget.item.member_branch?.contact_phone ?? ' - ', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
                                       ],
                                     ),
                                     SizedBox(height: 4),
@@ -202,23 +201,23 @@ class _BottonSheetMapState extends State<BottonSheetMap> {
                     height: 48,
                     child: ElevatedButton(
                       onPressed: () async {
-                        // if (widget.distanceInMeters <= 5) {
-                        //   if (widget.item.is_active == 1) {
-                        //     Navigator.pop(context);
-                        //     final out = await _showBottomSheet(context, widget.item, widget.lat, widget.long);
-                        //     print(out);
-                        //   } else {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) {
-                          return OrdersItemsPage(
-                            shop: widget.item,
-                          );
-                        }));
-                        //   }
-                        // }
+                        if (widget.distanceInMeters <= 30000) {
+                          if (widget.item.is_active == 1) {
+                            Navigator.pop(context);
+                            final out = await _showBottomSheet(context, widget.item, widget.lat, widget.long);
+                            print(out);
+                          } else {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              return OrdersItemsPage(
+                                shop: widget.item,
+                              );
+                            }));
+                          }
+                        }
                         // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => FristPage()), (route) => false);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: widget.distanceInMeters >= 5 ? Colors.grey : const Color(0xFF2D3194),
+                        backgroundColor: widget.distanceInMeters >= 30000 ? Colors.grey : const Color(0xFF2D3194),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -295,8 +294,7 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Container(
-              decoration:
-                  BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -328,8 +326,7 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(widget.item.member_branch?.name ?? ' - ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                                          Text(widget.item.member_branch?.contact_phone ?? ' - ',
-                                              style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
+                                          Text(widget.item.member_branch?.contact_phone ?? ' - ', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
                                         ],
                                       ),
                                       SizedBox(height: 4),
@@ -405,16 +402,11 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
                           String? imageAPI;
                           try {
                             LoadingDialog.open(context);
-                            if (listimages != null) {
-                              final image = await UoloadService.addImage(file: listimages, path: 'images/asset/');
-                              imageAPI = image;
-                            }
-                            await HomeService.checkInPoint(
-                                route_id: widget.item.route_id!,
-                                route_point_id: widget.item.id,
-                                latitude: widget.lat,
-                                longitude: widget.long,
-                                image: imageAPI);
+                            // if (listimages != null) {
+                            //   final image = await UoloadService.addImage(file: listimages, path: 'images/asset/');
+                            //   imageAPI = image;
+                            // }
+                            // await HomeService.checkInPoint(route_id: widget.item.route_id!, route_point_id: widget.item.id, latitude: widget.lat, longitude: widget.long, image: imageAPI);
                             LoadingDialog.close(context);
                             await showDialog(
                               barrierDismissible: false,
@@ -423,16 +415,19 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
                                 Future.delayed(Duration(seconds: 3), () {
                                   Navigator.of(context).pop(true);
                                 });
-                                return CheckInSuccessDialog(timeText: '12:00 น.');
+                                return CheckInSuccessDialog(timeText: formatTime(TimeOfDay.now()));
                               },
                             );
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => FristPage(
-                                          pageNum: 1,
-                                        )),
-                                (route) => false);
+                            Navigator.pop(context);
+                            if (!mounted) return;
+                            _showBottomSheetOrder(context, widget.item, widget.lat, widget.long);
+                            // Navigator.pushAndRemoveUntil(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //         builder: (context) => FristPage(
+                            //               pageNum: 1,
+                            //             )),
+                            //     (route) => false);
                           } on ClientException catch (e) {
                             if (!mounted) return;
                             LoadingDialog.close(context);
@@ -506,6 +501,29 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
     );
   }
 
+  String formatTime(TimeOfDay time) {
+    final now = DateTime.now();
+    final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute, now.second);
+    return DateFormat('HH:mm:ss').format(dt); // เช่น 19.00
+  }
+
+  _showBottomSheetOrder(BuildContext context, RoutePoints item, double lat, double long) {
+    final size = MediaQuery.of(context).size;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent, // พื้นหลังเป็นสีใส
+      builder: (context) {
+        return BottonSheetMapOrder(
+          // distanceInMeters: distanceInMeters,
+          item: item,
+          lat: lat,
+          long: long,
+        );
+      },
+    );
+  }
+
   chooseImage() async {
     Map<Permission, PermissionStatus> statues = await [Permission.storage, Permission.photos].request();
     PermissionStatus? statusStorage = statues[Permission.storage];
@@ -525,5 +543,233 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
     }
 
     setState(() {});
+  }
+}
+
+class BottonSheetMapOrder extends StatefulWidget {
+  const BottonSheetMapOrder({super.key, required this.item, required this.lat, required this.long});
+  final RoutePoints item;
+  final double lat;
+  final double long;
+
+  @override
+  State<BottonSheetMapOrder> createState() => _BottonSheetMapOrderState();
+}
+
+class _BottonSheetMapOrderState extends State<BottonSheetMapOrder> {
+  double currentExtent = 0.55;
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return NotificationListener<DraggableScrollableNotification>(
+      onNotification: (notification) {
+        setState(() {
+          currentExtent = notification.extent;
+        });
+        return true;
+      },
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.55,
+        maxChildSize: 1.0,
+        minChildSize: 0.3,
+        builder: (_, scrollController) {
+          return Container(
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(
+                          Icons.horizontal_rule_sharp,
+                          color: Colors.transparent,
+                          size: 45,
+                        ),
+                        Icon(
+                          Icons.horizontal_rule_sharp,
+                          size: 45,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context, true);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: Icon(
+                              Icons.close,
+                              size: 30,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 17,
+                                backgroundImage: NetworkImage('https://cdn-icons-png.flaticon.com/512/3075/3075977.png'),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              SizedBox(
+                                width: size.width * 0.75,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(widget.item.member_branch?.name ?? ' - ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                                        Text(widget.item.member_branch?.contact_phone ?? ' - ', style: TextStyle(fontWeight: FontWeight.w400, fontSize: 11)),
+                                      ],
+                                    ),
+                                    SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        _buildTag('OPEN', Colors.green),
+                                        SizedBox(width: 6),
+                                        _buildTag('เวลาทำการ: 08.00 น. - 17.00 น.', Colors.blue),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: currentExtent > 0.7 ? size.height * 0.7 : size.height * 0.3,
+                            child: SingleChildScrollView(
+                              controller: scrollController,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 10),
+                                  Text('ที่อยู่', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                                  SizedBox(height: 10),
+                                  Text(
+                                      '${widget.item.member_branch?.address ?? ' - '} ${widget.item.member_branch?.sub_district ?? ' - '}  ${widget.item.member_branch?.district ?? ' - '}  ${widget.item.member_branch?.province ?? ' - '}',
+                                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                  SizedBox(height: 10),
+                                  Text('วันเวลาที่ต้องส่ง', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                                  SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('วันจันทร์', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                      Text('08:00 น. - 17:00 น.', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+                                    ],
+                                  ),
+                                  SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('วันอังคาร', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                      Text('08:00 น. - 17:00 น.', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+                                    ],
+                                  ),
+                                  SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('วันพุธ', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                      Text('08:00 น. - 17:00 น.', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+                                    ],
+                                  ),
+                                  SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('วันพฤหัสบดี', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                      Text('08:00 น. - 17:00 น.', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+                                    ],
+                                  ),
+                                  SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('วันศุกร์', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                      Text('08:00 น. - 17:00 น.', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+                                    ],
+                                  ),
+                                  SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('วันเสาร์', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                      Text('08:00 น. - 17:00 น.', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+                                    ],
+                                  ),
+                                  SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('วันอาทิตย์', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+                                      Text('08:00 น. - 17:00 น.', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return OrdersItemsPage(
+                            shop: widget.item,
+                          );
+                        }));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2D3194),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'ส่งสินค้า',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildTag(String text, Color color) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w500),
+      ),
+    );
   }
 }
