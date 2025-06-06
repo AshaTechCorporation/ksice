@@ -402,11 +402,11 @@ class _BottonSheetMapCheckInState extends State<BottonSheetMapCheckIn> {
                           String? imageAPI;
                           try {
                             LoadingDialog.open(context);
-                            // if (listimages != null) {
-                            //   final image = await UoloadService.addImage(file: listimages, path: 'images/asset/');
-                            //   imageAPI = image;
-                            // }
-                            // await HomeService.checkInPoint(route_id: widget.item.route_id!, route_point_id: widget.item.id, latitude: widget.lat, longitude: widget.long, image: imageAPI);
+                            if (listimages != null) {
+                              final image = await UoloadService.addImage(file: listimages, path: 'images/asset/');
+                              imageAPI = image;
+                            }
+                            await HomeService.checkInPoint(route_id: widget.item.route_id!, route_point_id: widget.item.id, latitude: widget.lat, longitude: widget.long, image: imageAPI);
                             LoadingDialog.close(context);
                             await showDialog(
                               barrierDismissible: false,
