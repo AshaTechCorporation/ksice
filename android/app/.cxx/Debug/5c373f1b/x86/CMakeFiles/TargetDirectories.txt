@@ -1,0 +1,2 @@
+/Users/niwatpumkin/Desktop/AppProject/ksice/android/app/.cxx/Debug/5c373f1b/x86/CMakeFiles/edit_cache.dir
+/Users/niwatpumkin/Desktop/AppProject/ksice/android/app/.cxx/Debug/5c373f1b/x86/CMakeFiles/rebuild_cache.dir
