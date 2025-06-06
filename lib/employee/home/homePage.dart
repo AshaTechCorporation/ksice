@@ -146,7 +146,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           child: Image.asset(
             'assets/icons/tabler_truck-delivery (2)_0.png',
             width: 30,
-            height: 30,
+            height: 25,
           )), //
     );
   }
@@ -184,32 +184,37 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildGaugeWithLabels() {
     return SizedBox(
-      width: 360,
-      height: 200,
+      width: double.infinity,
+      height: 130,
       child: Stack(
-        alignment: Alignment.center,
         children: [
           SfRadialGauge(
             axes: <RadialAxis>[
               RadialAxis(
-                minimum: 0,
-                maximum: 100,
+                radiusFactor: 1.5,
+                centerX: 0.5,
+                centerY: 0.9,
                 startAngle: 180,
                 endAngle: 360,
                 showLabels: false,
+                showAxisLine: false,
                 showTicks: false,
-                radiusFactor: 0.85,
+                ticksPosition: ElementsPosition.outside,
+                labelsPosition: ElementsPosition.outside,
+                minimum: 0,
+                maximum: 100,
                 axisLineStyle: const AxisLineStyle(
                   thickness: 0.15,
                   thicknessUnit: GaugeSizeUnit.factor,
                 ),
-                ranges: [
+                ranges: <GaugeRange>[
                   _gaugeRange(0, 20, Colors.green),
                   _gaugeRange(20, 40, Colors.lightGreen),
                   _gaugeRange(40, 60, Colors.yellow),
                   _gaugeRange(60, 80, Colors.orange),
                   _gaugeRange(80, 100, Colors.red),
                 ],
+                // pointers: <GaugePointer>[NeedlePointer(value: 60)],
                 pointers: <GaugePointer>[
                   NeedlePointer(
                     value: progressValue,
@@ -241,10 +246,72 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
             ],
           ),
-          ..._buildOverlayLabels(), // ✅ ตัวเลขบนเส้น
+          ..._buildOverlayLabels(),
         ],
       ),
     );
+    // return SizedBox(
+    //   width: 360,
+    //   height: 200,
+    //   child: Stack(
+    //     alignment: Alignment.center,
+    //     children: [
+    //       SfRadialGauge(
+    //         axes: <RadialAxis>[
+    //           RadialAxis(
+    //             minimum: 0,
+    //             maximum: 100,
+    //             startAngle: 180,
+    //             endAngle: 360,
+    //             showLabels: false,
+    //             showTicks: false,
+    //             radiusFactor: 0.85,
+    //             axisLineStyle: const AxisLineStyle(
+    //               thickness: 0.15,
+    //               thicknessUnit: GaugeSizeUnit.factor,
+    //             ),
+    //             ranges: [
+    //               _gaugeRange(0, 20, Colors.green),
+    //               _gaugeRange(20, 40, Colors.lightGreen),
+    //               _gaugeRange(40, 60, Colors.yellow),
+    //               _gaugeRange(60, 80, Colors.orange),
+    //               _gaugeRange(80, 100, Colors.red),
+    //             ],
+    //             pointers: <GaugePointer>[
+    //               NeedlePointer(
+    //                 value: progressValue,
+    //                 enableAnimation: true,
+    //                 animationDuration: 800,
+    //                 needleLength: 0.7,
+    //                 lengthUnit: GaugeSizeUnit.factor,
+    //                 needleStartWidth: 2, // ✅ ปรับให้หนาขึ้น
+    //                 needleEndWidth: 4,
+    //                 needleColor: Colors.black,
+    //                 knobStyle: const KnobStyle(
+    //                   color: Colors.black,
+    //                   borderColor: Colors.black,
+    //                   borderWidth: 1.5,
+    //                   sizeUnit: GaugeSizeUnit.logicalPixel,
+    //                 ),
+    //               ),
+    //             ],
+    //             annotations: <GaugeAnnotation>[
+    //               GaugeAnnotation(
+    //                 angle: 90,
+    //                 positionFactor: 0.3,
+    //                 widget: Text(
+    //                   '${progressValue.toInt()}%',
+    //                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    //                 ),
+    //               ),
+    //             ],
+    //           ),
+    //         ],
+    //       ),
+    //       ..._buildOverlayLabels(), // ✅ ตัวเลขบนเส้น
+    //     ],
+    //   ),
+    // );
   }
 
 // 🔧 เพิ่มแยก Range สีพร้อม border
@@ -261,9 +328,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   List<Widget> _buildOverlayLabels() {
     List<int> values = [0, 20, 40, 60, 80, 100];
-    double radius = 95; // ✅ ขยับให้อยู่บนโค้ง
-    double centerX = 180;
-    double centerY = 100;
+    double radius = 110; // ✅ ขยับให้อยู่บนโค้ง
+    double centerX = 170;
+    double centerY = 110;
 
     return values.map((v) {
       double angle = 180 - (v / 100 * 180);
