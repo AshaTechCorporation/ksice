@@ -116,7 +116,7 @@ class _FristPageState extends State<FristPage> {
             BottomNavigationBarItem(
               icon: _buildNavItem(
                 index: 0,
-                image: 'assets/icons/material-symbols_home-outline-rounded_0.png',
+                image: 'assets/icons/material-symbols_home-outline-rounded (1)_0.png',
                 label: 'หน้าหลัก',
               ),
               label: '',
@@ -124,7 +124,7 @@ class _FristPageState extends State<FristPage> {
             BottomNavigationBarItem(
               icon: _buildNavItem(
                 index: 1,
-                image: 'assets/icons/bx_map_0.png',
+                image: 'assets/icons/bx_map (1)_0.png',
                 label: 'MAP',
               ),
               label: '',
@@ -132,7 +132,7 @@ class _FristPageState extends State<FristPage> {
             BottomNavigationBarItem(
               icon: _buildNavItem(
                 index: 2,
-                image: 'assets/icons/subway_refresh-time_0.png',
+                image: 'assets/icons/subway_refresh-time (1)_0.png',
                 label: 'ประวัติการส่ง',
               ),
               label: '',
@@ -140,7 +140,7 @@ class _FristPageState extends State<FristPage> {
             BottomNavigationBarItem(
               icon: _buildNavItem(
                 index: 3,
-                image: 'assets/icons/iconamoon_profile-bold_0.png',
+                image: 'assets/icons/iconamoon_profile-bold (1)_0.png',
                 label: 'โปรไฟล์',
               ),
               label: '',

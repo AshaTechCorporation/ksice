@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:ksice/employee/home/fristPage.dart';
 import 'package:ksice/login/Service/loginController.dart';
 import 'package:ksice/login/loginPage.dart';
@@ -13,6 +14,7 @@ void main() async {
   SystemChrome.setEnabledSystemUIMode(
     SystemUiMode.immersiveSticky, // ซ่อน status + navigation bar และเด้งกลับมาเมื่อปัด
   );
+  await initializeDateFormatting('th_TH', null);
 
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   prefs = await SharedPreferences.getInstance();

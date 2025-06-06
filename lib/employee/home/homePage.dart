@@ -1,10 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:ksice/constants.dart';
 import 'package:ksice/employee/home/ListCar/listCarPage.dart';
 import 'package:ksice/employee/home/customerPage.dart';
-import 'package:ksice/widgets/checkin_success_dialog.dart';
-import 'package:ksice/widgets/loadingDialog.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class HomePage extends StatefulWidget {
@@ -61,7 +60,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('00 พ.ค. 0000 12:00 น.', style: TextStyle(color: Colors.grey[700], fontSize: 16)),
+            Text(DateFormat('dd MMM y HH:mm', 'th_TH').format(DateTime.now()), style: TextStyle(color: Colors.grey[700], fontSize: 16)),
             const SizedBox(height: 16),
 
             // กราฟสถานะ
@@ -144,7 +143,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             }));
           },
           tooltip: 'เพิ่มรายการ',
-          child: Image.asset('assets/icons/tabler_truck-delivery_0.png')), //
+          child: Image.asset(
+            'assets/icons/tabler_truck-delivery (2)_0.png',
+            width: 30,
+            height: 30,
+          )), //
     );
   }
 
