@@ -247,7 +247,10 @@ class _ListCarPageState extends State<ListCarPage> {
                             children: [
                               CircleAvatar(
                                 radius: 8,
-                                backgroundImage: NetworkImage('https://cdn-icons-png.flaticon.com/512/3075/3075977.png'),
+                                // backgroundImage: NetworkImage('https://cdn-icons-png.flaticon.com/512/3075/3075977.png'),
+                                backgroundImage: AssetImage(
+                                  'assets/icons/carKSI.png',
+                                ),
                               ),
                               SizedBox(
                                 width: 5,

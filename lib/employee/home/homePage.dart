@@ -40,15 +40,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => CustomerPage()));
-            },
-            style: TextButton.styleFrom(
-              backgroundColor: buttonColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.3,
+            child: TextButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => CustomerPage()));
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: buttonColor,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: const Text('เพิ่มลูกค้า', style: TextStyle(color: Colors.white)),
             ),
-            child: const Text('เพิ่มลูกค้า', style: TextStyle(color: Colors.white)),
           ),
           const SizedBox(width: 12),
         ],
@@ -129,23 +132,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: buttonColor,
-        shape: RoundedRectangleBorder(
-          side: BorderSide(width: 3, color: buttonColor),
-          borderRadius: BorderRadius.circular(100),
-        ),
-        onPressed: () async {
-          final out = await Navigator.push(context, MaterialPageRoute(builder: (context) {
-            // return CreateItemPage();
-            return ListCarPage();
-          }));
-        },
-        tooltip: 'เพิ่มรายการ',
-        child: const Icon(
-          Icons.directions_bus_outlined,
-          color: Colors.white,
-        ),
-      ), //
+          backgroundColor: buttonColor,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(width: 3, color: buttonColor),
+            borderRadius: BorderRadius.circular(100),
+          ),
+          onPressed: () async {
+            final out = await Navigator.push(context, MaterialPageRoute(builder: (context) {
+              // return CreateItemPage();
+              return ListCarPage();
+            }));
+          },
+          tooltip: 'เพิ่มรายการ',
+          child: Image.asset('assets/icons/tabler_truck-delivery_0.png')), //
     );
   }
 

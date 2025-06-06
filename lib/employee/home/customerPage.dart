@@ -207,46 +207,88 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text('เพิ่มข้อมูลลูกค้า'),
           backgroundColor: Colors.white,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-        body: Column(
-          children: [
-            // 🔵 Step bar
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  _stepItem(0, 'ข้อมูลร้าน'),
-                  _stepDivider(0),
-                  _stepItem(1, 'ข้อมูลลูกค้า'),
-                  _stepDivider(1),
-                  _stepItem(2, 'ข้อมูลบริการ'),
-                ],
-              ),
+          appBar: AppBar(
+            title: Text('เพิ่มข้อมูลลูกค้า'),
+            backgroundColor: Colors.white,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
             ),
-
-            // 🔵 Tab Content
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  _tabOneContent(),
-                  _tabTwoContent(),
-                  _tabThreeContent(),
-                ],
+          ),
+          body: Column(
+            children: [
+              // 🔵 Step bar
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    _stepItem(0, 'ข้อมูลร้าน'),
+                    _stepDivider(0),
+                    _stepItem(1, 'ข้อมูลลูกค้า'),
+                    _stepDivider(1),
+                    _stepItem(2, 'ข้อมูลบริการ'),
+                  ],
+                ),
               ),
-            )
-          ],
-        ),
-      ),
+
+              // 🔵 Tab Content
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    _tabOneContent(),
+                    _tabTwoContent(),
+                    _tabThreeContent(),
+                  ],
+                ),
+              )
+            ],
+          ),
+          bottomNavigationBar: _tabController.index == 0
+              ? SafeArea(
+                  child: Container(
+                    margin: EdgeInsets.all(8),
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.indigo,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () async {
+                        goToStep(1);
+                      },
+                      child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                )
+              : _tabController.index == 1 && scanned
+                  ? SafeArea(
+                      child: Container(
+                        margin: EdgeInsets.all(8),
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // ทำอะไรเมื่อกด "ถัดไป"
+                            print('ชื่อ: ${card_fname.text}');
+                            goToStep(2);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.indigo,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    )
+                  : SizedBox.shrink()),
     );
   }
 
@@ -406,19 +448,19 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
           //_textField('รายละเอียดที่ตั้งร้านค้า', maxLines: 2),
           SizedBox(height: 24),
 
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.indigo,
-              ),
-              onPressed: () async {
-                goToStep(1);
-              },
-              child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            ),
-          )
+          // SizedBox(
+          //   width: double.infinity,
+          //   height: 48,
+          //   child: ElevatedButton(
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: Colors.indigo,
+          //     ),
+          //     onPressed: () async {
+          //       goToStep(1);
+          //     },
+          //     child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          //   ),
+          // )
         ],
       ),
     );
@@ -429,11 +471,23 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
       child: GestureDetector(
         onTap: () async {
           final picked = await showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime(2000),
-            lastDate: DateTime(2100),
-          );
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2100),
+              builder: (BuildContext context, Widget? child) {
+                return Theme(
+                  data: ThemeData.light().copyWith(
+                    colorScheme: ColorScheme.light(
+                      primary: buttonColor, // สีเมื่อเลือกวันที่
+                      // onPrimary: Colors.white, // สีข้อความเมื่อเลือกวันที่
+                      // surface: Colors.red, // สีพื้นหลังวันปัจจุบัน
+                      // onSurface: Colors.white, // สีข้อความวันปัจจุบัน
+                    ),
+                  ),
+                  child: child!,
+                );
+              });
           if (picked != null) {
             setState(() {
               controller.text = '${picked.day}/${picked.month}/${picked.year}';
@@ -448,7 +502,10 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
             borderRadius: BorderRadius.circular(8),
           ),
           alignment: Alignment.centerLeft,
-          child: Text(controller.text.isEmpty ? hint : controller.text),
+          child: Text(
+            controller.text.isEmpty ? hint : controller.text,
+            style: TextStyle(fontSize: 10),
+          ),
         ),
       ),
     );
@@ -597,24 +654,24 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
               ],
             ),
             SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () {
-                  // ทำอะไรเมื่อกด "ถัดไป"
-                  print('ชื่อ: ${card_fname.text}');
-                  goToStep(2);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigo,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-            ),
+            // SizedBox(
+            //   width: double.infinity,
+            //   height: 48,
+            //   child: ElevatedButton(
+            //     onPressed: () {
+            //       // ทำอะไรเมื่อกด "ถัดไป"
+            //       print('ชื่อ: ${card_fname.text}');
+            //       goToStep(2);
+            //     },
+            //     style: ElevatedButton.styleFrom(
+            //       backgroundColor: Colors.indigo,
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(8),
+            //       ),
+            //     ),
+            //     child: Text('ถัดไป', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            //   ),
+            // ),
           ]
         ],
       ),
@@ -735,28 +792,27 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                               radius: 24,
                                                               backgroundColor: Colors.white,
                                                               child: ClipOval(
-                                                                child:
-                                                                    productCategory[index].image != null && productCategory[index].image!.isNotEmpty
-                                                                        ? Image.network(
-                                                                            productCategory[index].image!,
-                                                                            width: 56,
-                                                                            height: 56,
-                                                                            fit: BoxFit.fill,
-                                                                            errorBuilder: (context, error, stackTrace) {
-                                                                              return Image.asset(
-                                                                                'assets/images/ice.png',
-                                                                                width: 56,
-                                                                                height: 56,
-                                                                                fit: BoxFit.fill,
-                                                                              );
-                                                                            },
-                                                                          )
-                                                                        : Image.asset(
+                                                                child: productCategory[index].image != null && productCategory[index].image!.isNotEmpty
+                                                                    ? Image.network(
+                                                                        productCategory[index].image!,
+                                                                        width: 56,
+                                                                        height: 56,
+                                                                        fit: BoxFit.fill,
+                                                                        errorBuilder: (context, error, stackTrace) {
+                                                                          return Image.asset(
                                                                             'assets/images/ice.png',
                                                                             width: 56,
                                                                             height: 56,
                                                                             fit: BoxFit.fill,
-                                                                          ),
+                                                                          );
+                                                                        },
+                                                                      )
+                                                                    : Image.asset(
+                                                                        'assets/images/ice.png',
+                                                                        width: 56,
+                                                                        height: 56,
+                                                                        fit: BoxFit.fill,
+                                                                      ),
                                                               ),
                                                             ),
                                                             const SizedBox(width: 8),
@@ -778,9 +834,7 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                                     width: 36,
                                                                     height: 36,
                                                                     decoration: BoxDecoration(
-                                                                      color: selectedIds.contains(productCategory[index].id)
-                                                                          ? Colors.green.shade100
-                                                                          : Colors.blue.shade100,
+                                                                      color: selectedIds.contains(productCategory[index].id) ? Colors.green.shade100 : Colors.blue.shade100,
                                                                       shape: BoxShape.circle,
                                                                     ),
                                                                     child: IconButton(
@@ -788,9 +842,7 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                                       iconSize: 20,
                                                                       icon: Icon(
                                                                         selectedIds.contains(productCategory[index].id) ? Icons.check : Icons.add,
-                                                                        color: selectedIds.contains(productCategory[index].id)
-                                                                            ? Colors.green
-                                                                            : buttonColor,
+                                                                        color: selectedIds.contains(productCategory[index].id) ? Colors.green : buttonColor,
                                                                       ),
                                                                       onPressed: () {
                                                                         setState(() {
@@ -843,28 +895,27 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                               radius: 24,
                                                               backgroundColor: Colors.white,
                                                               child: ClipOval(
-                                                                child:
-                                                                    productCategory[index].image != null && productCategory[index].image!.isNotEmpty
-                                                                        ? Image.network(
-                                                                            productCategory[index].image!,
-                                                                            width: 56,
-                                                                            height: 56,
-                                                                            fit: BoxFit.fill,
-                                                                            errorBuilder: (context, error, stackTrace) {
-                                                                              return Image.asset(
-                                                                                'assets/images/ice.png',
-                                                                                width: 56,
-                                                                                height: 56,
-                                                                                fit: BoxFit.fill,
-                                                                              );
-                                                                            },
-                                                                          )
-                                                                        : Image.asset(
+                                                                child: productCategory[index].image != null && productCategory[index].image!.isNotEmpty
+                                                                    ? Image.network(
+                                                                        productCategory[index].image!,
+                                                                        width: 56,
+                                                                        height: 56,
+                                                                        fit: BoxFit.fill,
+                                                                        errorBuilder: (context, error, stackTrace) {
+                                                                          return Image.asset(
                                                                             'assets/images/ice.png',
                                                                             width: 56,
                                                                             height: 56,
                                                                             fit: BoxFit.fill,
-                                                                          ),
+                                                                          );
+                                                                        },
+                                                                      )
+                                                                    : Image.asset(
+                                                                        'assets/images/ice.png',
+                                                                        width: 56,
+                                                                        height: 56,
+                                                                        fit: BoxFit.fill,
+                                                                      ),
                                                               ),
                                                             ),
                                                             const SizedBox(width: 8),
@@ -886,9 +937,7 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                                     width: 36,
                                                                     height: 36,
                                                                     decoration: BoxDecoration(
-                                                                      color: selectedIds.contains(productCategory[index].id)
-                                                                          ? Colors.green.shade100
-                                                                          : Colors.blue.shade100,
+                                                                      color: selectedIds.contains(productCategory[index].id) ? Colors.green.shade100 : Colors.blue.shade100,
                                                                       shape: BoxShape.circle,
                                                                     ),
                                                                     child: IconButton(
@@ -896,9 +945,7 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
                                                                       iconSize: 20,
                                                                       icon: Icon(
                                                                         selectedIds.contains(productCategory[index].id) ? Icons.check : Icons.add,
-                                                                        color: selectedIds.contains(productCategory[index].id)
-                                                                            ? Colors.green
-                                                                            : buttonColor,
+                                                                        color: selectedIds.contains(productCategory[index].id) ? Colors.green : buttonColor,
                                                                       ),
                                                                       onPressed: () {
                                                                         setState(() {
@@ -1172,9 +1219,21 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
         onTap: enabled
             ? () async {
                 final TimeOfDay? pickedTime = await showTimePicker(
-                  context: context,
-                  initialTime: TimeOfDay.now(),
-                );
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                    builder: (BuildContext context, Widget? child) {
+                      return Theme(
+                        data: ThemeData.light().copyWith(
+                          colorScheme: ColorScheme.light(
+                            primary: buttonColor, // สีเมื่อเลือกวันที่
+                            // onPrimary: Colors.white, // สีข้อความเมื่อเลือกวันที่
+                            // surface: Colors.red, // สีพื้นหลังวันปัจจุบัน
+                            // onSurface: Colors.white, // สีข้อความวันปัจจุบัน
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    });
                 if (pickedTime != null) {
                   final formatted = pickedTime.format(context);
                   setState(() {
@@ -1196,6 +1255,7 @@ class _CustomerPageState extends State<CustomerPage> with TickerProviderStateMix
             controller.text.isEmpty ? 'เลือกเวลา' : controller.text,
             style: TextStyle(
               color: enabled ? Colors.black87 : Colors.grey,
+              fontSize: 10,
             ),
           ),
         ),

@@ -11,6 +11,7 @@ import 'package:ksice/constants.dart';
 import 'package:ksice/employee/home/fristPage.dart';
 import 'package:ksice/employee/home/services/homeService.dart';
 import 'package:ksice/employee/map/ordersItem.dart';
+import 'package:ksice/employee/map/testmap.dart';
 import 'package:ksice/employee/map/widget/bottomSheetMap.dart';
 import 'package:ksice/login/Service/loginController.dart';
 import 'package:ksice/model/routePoints.dart';
@@ -30,6 +31,7 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
+  final GlobalKey mapKey = GlobalKey();
   GoogleMapController? mapController;
   double? lat;
   double? long;
@@ -305,7 +307,17 @@ class _MapPageState extends State<MapPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Map'),
+        title: GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return FlutterMapWithLabels(
+                  user: user!,
+                  lat: lat!,
+                  long: long!,
+                );
+              }));
+            },
+            child: Text('Map')),
       ),
       body: Column(
         children: [
@@ -326,7 +338,7 @@ class _MapPageState extends State<MapPage> {
                   : user == null && user?.trucks == null && user?.trucks?[0].routes == null && user?.trucks?[0].routes?[0].route_points == null
                       ? SizedBox(
                           width: MediaQuery.of(context).size.width,
-                          height: size.height * 0.724,
+                          height: size.height * 0.715,
                           child: GoogleMap(
                             initialCameraPosition: CameraPosition(
                               target: LatLng(lat!, long!), // ตำแหน่งเริ่มต้นของกล้อง
@@ -346,10 +358,11 @@ class _MapPageState extends State<MapPage> {
                         )
                       : SizedBox(
                           width: MediaQuery.of(context).size.width,
-                          height: size.height * 0.721,
+                          height: size.height * 0.715,
                           child: Stack(
                             children: [
                               GoogleMap(
+                                key: mapKey,
                                 initialCameraPosition: CameraPosition(
                                   target: LatLng(lat!, long!), // ตำแหน่งเริ่มต้นของกล้อง
                                   zoom: 14, // การซูมเริ่มต้น
@@ -359,10 +372,18 @@ class _MapPageState extends State<MapPage> {
                                 zoomControlsEnabled: false,
                                 onMapCreated: (controller) async {
                                   mapController = controller;
-                                  await Future.delayed(Duration(milliseconds: 100));
-                                  _updateAllMarkerPositions();
+                                  if (Platform.isAndroid) {
+                                    await Future.delayed(Duration(milliseconds: 500));
+                                  } else {
+                                    await Future.delayed(Duration(milliseconds: 100));
+                                  }
+
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    _updateAllMarkerPositions();
+                                  });
                                 },
                                 onCameraMove: (_) => _updateAllMarkerPositions(),
+
                                 markers: getMarkersFromData(user!),
                                 polylines: {
                                   Polyline(
@@ -472,7 +493,7 @@ class _MapPageState extends State<MapPage> {
                               ),
                               ...user!.trucks![0].routes![1].route_points!.map((item) {
                                 final Offset? pos = _markerScreenPositions[item.id.toString()];
-                                if (pos == null) return Container();
+                                if (pos == null) return SizedBox();
 
                                 return Positioned(
                                   left: pos.dx - 40,
@@ -490,9 +511,7 @@ class _MapPageState extends State<MapPage> {
                                           radius: 8,
                                           backgroundImage: NetworkImage('https://cdn-icons-png.flaticon.com/512/3075/3075977.png'),
                                         ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
+                                        SizedBox(width: 5),
                                         Text(
                                           item.member_branch?.name ?? ' - ',
                                           style: TextStyle(fontSize: 10, color: Colors.black),
@@ -501,7 +520,7 @@ class _MapPageState extends State<MapPage> {
                                     ),
                                   ),
                                 );
-                              }),
+                              }).toList(),
                             ],
                           ),
                         ),
