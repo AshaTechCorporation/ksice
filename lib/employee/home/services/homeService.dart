@@ -96,8 +96,8 @@ class HomeService {
           "driver_id": userID,
           "route_id": route_id,
           "route_point_id": route_point_id,
-          "latitude": 13.7273450,
-          "longitude": 100.7471930,
+          "latitude": latitude,
+          "longitude": longitude,
           "image": image,
         }));
     if (response.statusCode == 200) {

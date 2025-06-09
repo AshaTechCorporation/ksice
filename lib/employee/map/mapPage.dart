@@ -169,7 +169,7 @@ class _MapPageState extends State<MapPage> {
   }
 
   Set<Marker> getMarkersFromData(User user) {
-    final Set<Marker> allMarkers = user.trucks![0].routes![1].route_points!.map((item) {
+    final Set<Marker> allMarkers = user.trucks![0].routes![0].route_points!.map((item) {
       return Marker(
         markerId: MarkerId(item.id.toString()),
         position: LatLng(double.parse(item.latitude!), double.parse(item.longitude!)),
@@ -241,7 +241,7 @@ class _MapPageState extends State<MapPage> {
   void _updateAllMarkerPositions() async {
     if (mapController == null) return;
     if (mounted) {
-      for (var item in user!.trucks![0].routes![1].route_points!) {
+      for (var item in user!.trucks![0].routes![0].route_points!) {
         final LatLng latLng = LatLng(double.parse(item.latitude!), double.parse(item.longitude!));
         final screenCoordinate = await mapController!.getScreenCoordinate(latLng);
 
@@ -384,7 +384,7 @@ class _MapPageState extends State<MapPage> {
                                 },
                                 onCameraMove: (_) => _updateAllMarkerPositions(),
 
-                                markers: getMarkersFromData(user!),
+                                markers: user?.trucks?[0].routes == null ? {} : getMarkersFromData(user!),
                                 polylines: {
                                   Polyline(
                                     polylineId: PolylineId('route'),
@@ -491,7 +491,7 @@ class _MapPageState extends State<MapPage> {
                                 //   ),
                                 // },
                               ),
-                              ...user!.trucks![0].routes![1].route_points!.map((item) {
+                              ...user!.trucks![0].routes![0].route_points!.map((item) {
                                 final Offset? pos = _markerScreenPositions[item.id.toString()];
                                 if (pos == null) return SizedBox();
 
